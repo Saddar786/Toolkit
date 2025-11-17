@@ -1,0 +1,1577 @@
+
+<!DOCTYPE html>
+<!-- NEW: Set theme to light permanently -->
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <!-- NEW: Reverted to responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- This title will be used for the tab -->
+    <title>Student ID Card Generator</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Embedded Styles -->
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            /* Country-specific ACCENT colors */
+            --theme-primary: #006a4e; /* Default to PK Green */
+            --theme-primary-dark: #004d38;
+            --theme-border-top: #006a4e;
+            --theme-focus-shadow: rgba(0, 106, 78, 0.25);
+            --theme-button-shadow: rgba(0, 106, 78, 0.4);
+            --theme-button-shadow-hover: rgba(0, 106, 78, 0.5);
+            --theme-container-shadow: rgba(0, 106, 78, 0.15);
+            --theme-header-text: #004d38;
+            --theme-h2-text: #003324;
+            --theme-subtitle-text: #006a4e;
+            --theme-body-gradient-start: #e8f5e9;
+            --theme-body-gradient-end: #f1f8e9;
+            
+            /* NEW: Static light mode colors */
+            --bs-body-bg: #ffffff;
+            --bs-tertiary-bg: #f8f9fa;
+            --bs-body-color: #212529;
+            --bs-secondary-color: #6c757d;
+            --bs-border-color: #dee2e6;
+        }
+
+        [data-theme="bd"] {
+            --theme-primary: #006a4e; /* Bangladesh Green */
+            --theme-primary-dark: #004d3a;
+            --theme-border-top: #f42a41; /* Bangladesh Red */
+            --theme-focus-shadow: rgba(0, 106, 78, 0.25);
+            --theme-button-shadow: rgba(0, 106, 78, 0.4);
+            --theme-button-shadow-hover: rgba(0, 106, 78, 0.5);
+            --theme-container-shadow: rgba(0, 106, 78, 0.15);
+            --theme-header-text: #004d3a;
+            --theme-h2-text: #003324;
+            --theme-subtitle-text: #006a4e;
+            --theme-body-gradient-start: #e6f0eb;
+            --theme-body-gradient-end: #edf5f1;
+        }
+        
+        [data-theme="in"] {
+            --theme-primary: #FF9933; /* India Saffron */
+            --theme-primary-dark: #E68A00;
+            --theme-border-top: #138808; /* India Green */
+            --theme-focus-shadow: rgba(255, 153, 51, 0.25);
+            --theme-button-shadow: rgba(255, 153, 51, 0.4);
+            --theme-button-shadow-hover: rgba(255, 153, 51, 0.5);
+            --theme-container-shadow: rgba(255, 153, 51, 0.15);
+            --theme-header-text: #E68A00;
+            --theme-h2-text: #CC7A00;
+            --theme-subtitle-text: #FF9933;
+            --theme-body-gradient-start: #fff4e6;
+            --theme-body-gradient-end: #fff9f0;
+        }
+        
+        [data-theme="pk"] {
+             --theme-primary: #006a4e; /* Pakistan Green */
+            --theme-primary-dark: #004d3a;
+            --theme-border-top: #006a4e;
+            --theme-focus-shadow: rgba(0, 106, 78, 0.25);
+            --theme-button-shadow: rgba(0, 106, 78, 0.4);
+            --theme-button-shadow-hover: rgba(0, 106, 78, 0.5);
+            --theme-container-shadow: rgba(0, 106, 78, 0.15);
+            --theme-header-text: #004d3a;
+            --theme-h2-text: #003324;
+            --theme-subtitle-text: #006a4e;
+            --theme-body-gradient-start: #e8f5e9;
+            --theme-body-gradient-end: #f1f8e9;
+        }
+        
+        /* NEW: Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes subtleSlideIn {
+             from { opacity: 0.5; transform: translateX(-10px); }
+             to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* General Body and Form Page Styles */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--theme-body-gradient-start) 0%, var(--theme-body-gradient-end) 100%);
+            padding: 0;
+            margin: 0;
+            direction: ltr;
+            text-align: left;
+            min-height: 100vh;
+            transition: background 0.3s ease;
+            color: #212529; /* Static light mode color */
+        }
+
+        .container-fluid {
+             padding-left: 0;
+             padding-right: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 10px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--theme-container-shadow);
+            border-top: 4px solid var(--theme-border-top);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out; /* NEW: Animation */
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                background: #ffffff; /* Simpler background on mobile */
+            }
+            .container {
+                padding: 15px;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+                border-top: 4px solid var(--theme-border-top);
+            }
+            #previewPage .container-fluid { /* Target preview page container */
+                 background-color: #f8f9fa; /* Light grey background for the preview page on mobile */
+            }
+        }
+        
+        /* Modern Button Group Country Selector */
+        .country-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .country-selector .btn-group {
+             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+             border-radius: 8px; /* Rounded corners for the group */
+             display: flex; /* Make sure it's flex */
+             width: 100%; /* Make it full width */
+        }
+        
+        .country-selector .form-check {
+             padding: 0;
+             margin: 0;
+             flex: 1; /* This will make them equal width */
+        }
+
+        .country-selector .form-check-input {
+            display: none; /* Hide radio button */
+        }
+
+        .country-selector .form-check-label {
+            display: block;
+            padding: 10px 15px; /* Adjust padding */
+            text-align: center;
+            font-weight: 500;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #e9ecef; /* Default background */
+            border: 1px solid #dee2e6; /* Add subtle border */
+            margin: 0; /* Remove default margin */
+            font-size: 1rem;
+        }
+        
+        /* Adjust borders for group effect */
+        .country-selector .form-check:not(:first-child) .form-check-label {
+            border-left: none;
+        }
+         .country-selector .form-check:first-child .form-check-label {
+             border-top-left-radius: 8px;
+             border-bottom-left-radius: 8px;
+         }
+         .country-selector .form-check:last-child .form-check-label {
+             border-top-right-radius: 8px;
+             border-bottom-right-radius: 8px;
+         }
+
+
+        /* Active button style */
+        .country-selector .form-check-input:checked + .form-check-label {
+            color: #ffffff; /* White text for active */
+            background-color: var(--theme-primary); /* Use theme color for active BG */
+            border-color: var(--theme-primary-dark); /* Darker border for active */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            z-index: 2; /* Bring active button to front */
+            position: relative;
+        }
+        
+        @media (max-width: 768px) {
+            .country-selector {
+                margin: 0 -15px 20px -15px; /* Full width on mobile */
+            }
+            .country-selector .btn-group {
+                 width: 100%; /* Make group full width */
+                 display: flex;
+                 border-radius: 0; /* Remove rounding on mobile */
+            }
+             .country-selector .form-check {
+                 flex: 1; /* Distribute space equally */
+             }
+             .country-selector .form-check-label {
+                 border-radius: 0 !important; /* Remove rounding inside group on mobile */
+                 font-size: 0.95rem;
+                 padding: 12px 5px; /* Adjust padding */
+             }
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--theme-primary-dark);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--theme-header-text);
+            font-weight: 700;
+            font-size: 2.2rem;  
+        }
+        header .lead {
+            color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.6rem; /* Smaller h1 on mobile */
+            }
+            header .lead {
+                font-size: 0.95rem;
+            }
+        }
+
+        .main-title {
+            color: var(--theme-h2-text);
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: var(--theme-subtitle-text);
+            font-size: 0.95em;
+        }
+
+        /* Form Styles */
+        .form-section {
+            padding: 0; /* Remove padding */
+            border: none;
+            background-color: #ffffff;
+        }
+        
+        .card {
+            background-color: #ffffff;  
+            border: 1px solid #dee2e6;
+        }
+        
+        h2 {
+            color: var(--theme-h2-text);
+            border-left: 5px solid var(--theme-primary);
+            padding-left: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            animation: subtleSlideIn 0.4s ease-out; /* NEW: Animation */
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+            color: #343a40;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"], input[type="file"], select {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; /* NEW: Animation */
+            background-color: #fff; /* Static light bg */
+            color: #212529; /* Static light text */
+            border: 1px solid #ced4da;
+        }
+        
+        input::placeholder {
+            color: #6c757d;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--theme-primary);
+            outline: none;
+            box-shadow: 0 0 0 0.2rem var(--theme-focus-shadow);
+        }
+        
+        /* Button Styles */
+        .btn {
+            font-weight: 500;
+            padding: 12px 20px; /* Larger buttons */
+            border-radius: 9999px; /* CHANGED: Make buttons pill-shaped */
+            transition: all 0.3s ease;
+            width: 100%; /* NEW: Mobile-first full width */
+        }
+        
+        /* Form Buttons: Stacked on mobile, flex on desktop */
+        .form-buttons {
+            display: grid;
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .form-buttons {
+                display: flex;
+                justify-content: flex-end;
+            }
+            .form-buttons .btn {
+                width: auto; /* Auto width on desktop */
+            }
+            .form-buttons .btn-secondary {
+                margin-right: 0.5rem;
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
+            border: none;
+            box-shadow: 0 4px 12px var(--theme-button-shadow);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--theme-primary-dark) 0%, var(--theme-primary) 100%); /* Adjusted hover */
+            box-shadow: 0 6px 16px var(--theme-button-shadow-hover);
+            transform: translateY(-2px);
+            color: white;
+        }
+        .btn-primary i {
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-light.border {
+            border-color: var(--theme-primary) !important; /* CHANGED: Green border */
+            background: #ffffff;
+            color: var(--theme-primary); /* CHANGED: Green text */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .btn-light.border:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            color: var(--theme-primary-dark); /* Darker green on hover */
+        }
+        .btn-light.border i {
+            color: var(--theme-primary);
+        }
+        
+        /* Download Buttons: Stacked on mobile, flex on desktop */
+        .download-options {
+            text-align: center;
+            margin-top: 20px;
+            display: grid; /* Mobile-first: stacked */
+            gap: 10px;
+            padding: 0 10px; /* Padding for mobile */
+        }
+        
+        @media (min-width: 768px) {
+             .download-options {
+                display: flex; /* Desktop: inline */
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+             }
+             .download-options .btn {
+                width: auto; /* Auto width on desktop */
+                margin: 5px; /* Restore margin for flex layout */
+             }
+        }
+
+
+        .download-options .btn {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            margin: 0; /* Remove margin for grid layout */
+            color: white;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 9999px; /* CHANGED: Make pill-shaped */
+            border: none;
+            transform: translateY(0); /* Add for hover effect */
+        }
+        
+        .download-options .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* PDF and Print buttons */
+        .btn-danger {  
+            background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%); /* Red gradient */
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+        .btn-danger:hover {  
+            background: linear-gradient(135deg, #a71d2a 0%, #dc3545 100%); 
+            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.5);
+        }
+        .btn-info {  
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); /* Blue gradient */
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+        }
+        .btn-info:hover {    
+            background: linear-gradient(135deg, #0a58ca 0%, #0d6efd 100%); 
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.5);
+        }
+
+        /* UPDATED: Home button now uses theme colors */
+        .btn-home {
+            background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
+            border: none;
+            box-shadow: 0 4px 12px var(--theme-button-shadow);
+            color: white;
+        }
+        .btn-home:hover {
+            background: linear-gradient(135deg, var(--theme-primary-dark) 0%, var(--theme-primary) 100%);
+            box-shadow: 0 6px 16px var(--theme-button-shadow-hover);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .back-button { /* For Go Back */
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #495057 100%); /* Grey gradient hover */
+            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
+        }
+
+        /* --- Preview Display Styles (White Theme) --- */
+        #previewPage {
+            background-color: #f0f2f5; /* Light grey BG like Facebook */
+            color: #212529;
+            padding: 0 0 20px 0; /* Add padding bottom */
+            min-height: 100vh;
+            animation: fadeIn 0.5s ease-out; /* NEW: Animation */
+        }
+        
+        #previewPage header {
+            border-bottom-color: #dee2e6;
+        }
+        
+        #previewPage .main-title {
+             color: #212529 !important;
+        }
+        
+        /* --- ID Card Specific Styles --- */
+        
+        /* This is the card that will be printed/downloaded */
+        #sid-cardToPrint {
+            /* This ensures the card itself is the right size */
+            width: 325px; /* Approx 85.6mm at 96dpi */
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            overflow: hidden; /* Ensures rounded corners */
+            border-radius: 0.75rem; /* 12px */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        /* This is the container in the UI, which is responsive */
+        .id-card-preview-box {
+            position: relative;
+            /* CHANGED: Fully responsive layout */
+            width: 100%; 
+            max-width: 325px; /* Card max width */
+            margin: 10px auto; /* Center the box */
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px; /* Rounded corners */
+            padding: 0; /* No padding, the card itself has padding */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Softer shadow */
+            font-size: 1rem; /* Base font size */
+            overflow: hidden; /* Important for watermark */
+            color: #212529;
+        }
+
+        .id-card-portrait {
+            width: 100%;
+            background-color: #fff;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+        }
+        .id-card-portrait-watermark {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .id-card-portrait-watermark img {
+            width: 75%;
+            height: 75%;
+            object-fit: contain;
+            opacity: 0.05;
+            pointer-events: none;
+            transform: rotate(-30deg);
+        }
+        .id-card-portrait-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .id-card-portrait-header {
+            background-color: #f8f9fa;
+            padding: 1rem; /* 16px */
+            text-align: center;
+            border-bottom: 2px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 140px; /* Give space */
+        }
+        .id-card-portrait-header img {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 0.5rem; /* 8px */
+            border-radius: 50%;
+            border: 2px solid #ced4da;
+            object-fit: contain;
+            background-color: #fff;
+        }
+        #sid-schoolNameOnCard {
+            font-weight: 700;
+            font-size: 1.1rem; /* 18px */
+            color: #000;
+            line-height: 1.2;
+        }
+
+        .id-card-session-header {
+            text-align: center;
+            padding: 0.5rem; /* 8px */
+            border-bottom: 1px solid #eee;
+            border-top: 1px solid #eee;
+            background-color: #fcfcfc;
+        }
+        .id-card-session-header .title {
+            font-size: 0.8rem; /* 13px */
+            font-weight: 600;
+            color: #212529;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .id-card-session-header .session {
+            font-size: 0.7rem; /* 11px */
+            color: #6c757d;
+        }
+
+        .id-card-portrait-body {
+            padding: 1.25rem; /* 20px */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .id-card-portrait-photo {
+            width: 128px; /* 128px */
+            height: 160px; /* 160px */
+            object-fit: cover;
+            border: 4px solid #e5e7eb;
+            border-radius: 0.5rem; /* 8px */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 1rem; /* 16px */
+            background-color: #f8f9fa;
+        }
+        
+        .id-card-name-section {
+             text-align: center;
+             margin-bottom: 1rem; /* 16px */
+        }
+        #sid-studentNameOnCard {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 0;
+            line-height: 1.1;
+        }
+        #sid-programOnCard {
+            font-size: 1rem; /* 16px */
+            color: #495057;
+            margin-bottom: 0;
+        }
+
+        .info-grid {
+            width: 100%;
+            margin-bottom: 1rem; /* 16px */
+        }
+        .info-grid div {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 6px 0;
+            font-size: 0.9rem; /* 14px */
+        }
+        .info-grid span:first-child {
+             color: #6c757d;
+             font-weight: 500;
+        }
+        .info-grid span:last-child {
+            font-weight: 700;
+            color: #000;
+            word-break: break-all;
+            text-align: right;
+        }
+
+        .barcode-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 0.5rem; /* 8px */
+            margin-bottom: 1rem; /* 16px */
+        }
+        
+        .barcode-graphic {
+            width: 100%;
+            max-width: 200px;
+            height: 40px;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+        }
+        .barcode-graphic span {
+            background: #111;
+        }
+        #sid-barcodeTextOnCard {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem; /* 12px */
+            letter-spacing: 1px;
+            color: #000;
+            margin-top: 4px;
+        }
+        
+        .signature-section {
+            margin-top: 1rem; /* 16px */
+            text-align: center;
+            width: 100%;
+        }
+        .signature-section .font-signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.25rem; /* 36px */
+            font-weight: 700;
+            color: #111;
+            line-height: 1;
+            margin-bottom: -5px;
+        }
+        .signature-section hr {
+            width: 75%;
+            margin: 0 auto;
+            color: #6c757d;
+        }
+        .signature-section .sig-title {
+            text-transform: uppercase;
+            color: #495057;
+            font-size: 0.7rem; /* 11px */
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .id-card-footer {
+            text-align: center;
+            padding: 0.75rem; /* 12px */
+            font-weight: 600;
+            font-size: 0.8rem; /* 13px */
+            color: #fff;
+            background: var(--theme-primary);
+            line-height: 1.3;
+        }
+        
+        /* NEW: Footer Added Back */
+        footer {
+            background-color: #ffffff; /* Static background */
+            color: #666; /* Static color */
+            border-top: 1px solid #eaeaea; /* Static border */
+            padding: 15px; /* Added padding */
+            margin-top: 20px; /* Added margin */
+            text-align: center; 
+            font-family: Arial, sans-serif; 
+            font-size: 14px;
+        }
+
+
+        /* Print styles */
+        @media print {
+            body { background: #ffffff !important; padding: 0; color: #000 !important; }
+            .container, header, .download-options, footer, #inputPage, .theme-toggle { display: none !important; }
+            .modal-backdrop { display: none !important; }
+            
+            #previewPage { 
+                display: block !important; 
+                background-color: #ffffff !important;
+                color: #212529 !important;
+                overflow: visible !important; /* Allow printing */
+                padding: 0;
+                margin: 0;
+            }
+            
+            /* This ensures ONLY the card prints, centered */
+            #sid-cardToPrint {
+                display: block !important;
+                width: 85.6mm; /* Standard ID-1 card width */
+                height: 53.98mm; /* Standard ID-1 card height - This might clip, let's use auto */
+                height: auto;
+                margin: 30mm auto; /* Center on A4 page */
+                padding: 0;
+                box-shadow: none;
+                background: #ffffff !important;
+                border: 1px solid #dee2e6 !important;
+                color: #212529 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            /* Hide the UI preview box */
+            .id-card-preview-box {
+                display: none !important;
+            }
+
+            /* NEW Print Watermark */
+            .id-card-portrait-watermark img {
+                opacity: 0.1 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            /* Force print colors */
+            .id-card-portrait-header, .id-card-session-header {
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .id-card-footer {
+                 background-color: var(--theme-primary) !important;
+                 color: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .barcode-graphic span {
+                background: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            /* Force all text colors */
+            * { color: #000 !important; }
+            #sid-schoolNameOnCard, #sid-studentNameOnCard, .info-grid span:last-child { color: #000 !important; }
+            .id-card-session-header .title { color: #212529 !important; }
+            .id-card-session-header .session, #sid-programOnCard, .info-grid span:first-child, .signature-section .sig-title { color: #495057 !important; }
+        }
+
+        /* NEW: Re-added @media query for mobile responsiveness */
+        @media (max-width: 768px) {
+            
+            /* Preview Page now fully responsive */
+            #previewPage {
+                padding: 0; /* Remove padding */
+                background-color: #ffffff; /* Match form bg */
+            }
+            
+            /* Full width on mobile */
+            .id-card-preview-box {
+                padding: 0; /* Mobile padding */
+                margin: 0; /* No margin */
+                width: 100%; /* Use most of the screen */
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                font-size: 0.9rem; /* Smaller text */
+            }
+            
+            /* Make card 100% width inside preview box */
+            #sid-cardToPrint {
+                width: 100%;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
+            .id-card-portrait-header {
+                 min-height: 120px;
+            }
+             .id-card-portrait-header img {
+                width: 70px;
+                height: 70px;
+            }
+            #sid-schoolNameOnCard {
+                font-size: 1rem;
+            }
+            
+            .id-card-portrait-photo {
+                width: 110px;
+                height: 140px;
+            }
+            #sid-studentNameOnCard {
+                font-size: 1.3rem;
+            }
+            #sid-programOnCard {
+                font-size: 0.9rem;
+            }
+            .info-grid div {
+                font-size: 0.8rem;
+            }
+            .signature-section .font-signature {
+                font-size: 2rem;
+            }
+        }
+        
+    </style>
+    
+</head>
+<body data-theme="pk"> <!-- Default theme Pakistan -->
+
+    <!-- This is the Form Page -->
+    <div class="container py-4" id="inputPage">
+        
+        <!-- MOVED & FULL WIDTH: Back to Home button -->
+        <div class="d-grid gap-2 mb-3">
+            <a class='btn btn-home' href='/'>
+                <i class="bi bi-house-door-fill"></i> Home
+            </a>
+        </div>
+        
+        <!-- Modern Button Group Country Selector -->
+        <div class="country-selector">
+            <div class="btn-group w-100" role="group" aria-label="Select Country">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="country" id="countryPK" value="pk" checked>
+                    <label class="form-check-label" for="countryPK">
+                        🇵🇰 
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="country" id="countryBD" value="bd">
+                    <label class="form-check-label" for="countryBD">
+                        🇧🇩 
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="country" id="countryIN" value="in">
+                    <label class="form-check-label" for="countryIN">
+                        🇮🇳 
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <header class="text-center mb-4 position-relative">
+            <h1 class="display-5 fw-bold mb-2">STUDENT ID CARD GENERATOR</h1>
+            <p class="lead">Enter details to generate the official student ID card.</p>
+        </header>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4 p-md-5"> <!-- Added more padding on desktop -->
+                <h2 class="h4 mb-4">1. Enter Details</h2>
+                <form id="sid-cardForm" class="needs-validation" onsubmit="event.preventDefault(); return false;">
+                
+                    <div class="mb-3">
+                        <label for="sid-schoolSelect" class="form-label">Institution Name</label>
+                        <select id="sid-schoolSelect" class="form-select" required>
+                            <option value="">Select Country First</option>
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="sid-studentName" class="form-label">Student's Name</label>
+                            <input type="text" id="sid-studentName" class="form-control" placeholder="e.g., Bilal Ahmed" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="sid-program" class="form-label">Program / Class</label>
+                            <input type="text" id="sid-program" class="form-control" placeholder="e.g., BSCS / 10th Grade" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="sid-studentID" class="form-label">Student ID / Roll No.</label>
+                            <input type="text" id="sid-studentID" class="form-control" placeholder="e.g., NUST12345" pattern="[\w\d-]+" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="sid-validThru" class="form-label">Valid Thru</label>
+                            <input type="text" id="sid-validThru" class="form-control" placeholder="e.g., 08/2028" pattern="\d{2}/\d{4}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="sid-photoUpload" class="form-label">Upload Student's Photo (Passport Size)</label>
+                        <input type="file" id="sid-photoUpload" class="form-control" accept="image/png, image/jpeg, image/webp" required>
+                        <div class="form-text">For best results, use a photo with a plain background.</div>
+                    </div>
+
+                    <!-- NEW: Responsive Button Layout -->
+                    <div class="form-buttons mt-4">
+                        <button type="button" class="btn btn-light border" id="sid-btnAutofill">
+                            <i class="bi bi-shuffle"></i> Autofill
+                        </button>
+                        <button type="submit" id="sid-btnGenerate" class="btn btn-primary">
+                            <i class="bi bi-person-badge"></i> Generate ID Card
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- MOVED & HIDDEN: The preview column is now here, hidden. JS will use this. -->
+        <div style="display: none;">
+            <!-- This is the container for the card in the UI -->
+            <div id="sid-preview-container" class="id-card-preview-box">
+                <!-- This is the actual card content that gets downloaded -->
+                <div id="sid-cardToPrint">
+                    <div class="id-card-portrait">
+                        <div class="id-card-portrait-watermark">
+                            <!-- default placeholder; JS will set src to local logo or fallback -->
+                            <img id="sid-watermarkLogoOnCard" src="https://placehold.co/200x200/eeeeee/006a4e?text=LOGO" alt="Watermark">
+                        </div>
+                        <div class="id-card-portrait-content">
+                            <div class="id-card-portrait-header">
+                                <!-- default placeholder; JS will set src to local logo or fallback -->
+                                <img id="sid-logoOnCard" src="https://placehold.co/100x100/eeeeee/006a4e?text=LOGO" alt="School Logo">
+                                <div id="sid-schoolNameOnCard" class="mt-2">INSTITUTION NAME</div>
+                            </div>
+                            <div class="id-card-session-header">
+                                <div class="title">Student ID Card</div>
+                                <div class="session" id="sid-sessionOnCard">Academic Session 2024-2025</div>
+                            </div>
+                            <div class="id-card-portrait-body">
+                                <img id="sid-photoOnCard" src="https://placehold.co/128x160/cccccc/333333?text=Student\nPhoto" alt="Student Photo" class="id-card-portrait-photo">
+                                
+                                <div class="id-card-name-section">
+                                    <p class="mb-0" id="sid-studentNameOnCard">Student Name</p>
+                                    <p class="mb-0" id="sid-programOnCard">Program / Class</p>
+                                </div>
+                                
+                                <div class="info-grid">
+                                    <div><span>Student ID:</span><span id="sid-studentIdOnCard">SCS12345</span></div>
+                                    <div><span>Valid Thru:</span><span id="sid-validThruOnCard">08/2028</span></div>
+                                </div>
+                                
+                                <div class="barcode-section">
+                                    <div id="sid-barcodeOnCard" class="barcode-graphic" aria-label="Barcode"></div>
+                                    <div id="sid-barcodeTextOnCard" class="text-center mt-1 w-100"></div>
+                                </div>
+
+                                <div class="signature-section">
+                                    <p class="font-signature mb-0" id="sid-signatoryOnCard">P. Sharma</p>
+                                    <hr class="my-0">
+                                    <p class="sig-title mb-0" id="sid-signatoryTitleOnCard">Authorized Signatory</p>
+                                </div>
+                            </div>
+                            <div id="sid-footerOnCard" class="id-card-footer">
+                                Motto Goes Here
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Empty State (no longer used, but keep for JS) -->
+            <div id="sid-empty-state"></div>
+        </div>
+        
+    </div>
+    
+    <!-- This is the Preview/Download Page -->
+    <div class="container-fluid" id="previewPage" style="display:none;">
+        
+        <!-- MOVED & FULL WIDTH: Back to Home button -->
+        <div class="container-fluid" style="background-color: #f8f9fa; padding-top: 15px; padding-right: 15px; padding-left: 15px; max-width: 900px; margin: 0 auto;">
+             <div class="d-grid gap-2">
+                <a class='btn btn-home' href='/'>
+                    <i class="bi bi-house-door-fill"></i> Home
+                </a>
+            </div>
+        </div>
+
+        <header class="text-center container-fluid pt-4" style="background-color: #f8f9fa; color: #212529; max-width: 900px; margin: 0 auto; padding-top: 1rem !important;">
+            <h2 class="main-title" style="color: #212529 !important;">YOUR GENERATED ID CARD</h2>
+        </header>
+
+        <!-- ID Card Preview will be generated here -->
+        <div class="id-card-preview-box" id="sid-preview-box-main">
+            <!-- This will be filled by JavaScript -->
+        </div>
+
+        <!-- Download buttons are outside the scrolling box -->
+        <div class="download-options mt-4 pb-4 container-fluid" style="background-color: #f8f9fa; max-width: 900px; margin: 0 auto; padding-bottom: 20px !important;">
+            <button id="sid-btnImage" class="btn btn-danger"><i class="bi bi-image-fill"></i> Download as Image</button>
+            <button id="sid-btnPrint" class="btn btn-info"><i class="bi bi-printer-fill"></i> Print Card</button>
+            <button class="back-button btn btn-secondary" id="sid-btnBack"><i class="bi bi-arrow-left-circle"></i> Go Back to Form</button>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="errorModalLabel">Error</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="errorModalBody">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- NEW: Footer Added Back -->
+    <footer style="text-align: center; margin: 20px 0; padding: 15px 0; border-top: 1px solid #eaeaea; color: #666; background-color: #ffffff; transition: all 0.3s ease;">
+        
+        <p>© 2025 Professor. All Rights Reserved.</p>
+        <p style="margin-top: 5px;">
+            <span>For support: </span>
+            <a href="https://t.me/Professor11006" style="color: #2AABEE; text-decoration: none; font-weight: bold;" onclick="window.open('https://t.me/Professor11006', '_blank'); return false;">
+                <span style="margin-right: 5px;">💬</span>@Professor11006
+            </a>
+        </p>
+    </footer>
+
+    <!-- JS Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    
+    <!-- Embedded JS -->
+    <script>
+        let errorModalInstance = null;
+        
+        /**
+         * Shows a Bootstrap modal with an error message.
+         * @param {string} message - The error message to display.
+         * @param {string} [title='Error'] - The title for the modal.
+         */
+        function showErrorModal(message, title = 'Error') {
+            if (!errorModalInstance) {
+                const modalElement = document.getElementById('errorModal');
+                if (modalElement) {
+                    errorModalInstance = new bootstrap.Modal(modalElement);
+                } else {
+                    console.error("Error modal element not found. Falling back to console.");
+                    console.error(title + ": " + message);
+                    return;
+                }
+            }
+            document.getElementById('errorModalLabel').textContent = title;
+            document.getElementById('errorModalBody').textContent = message;
+            errorModalInstance.show();
+        }
+
+        // --- Data Store ---
+        const studentIdCountryData = {
+            pk: {
+                color: '#006a4e', // PK Green
+                schools: [
+                    { name: "Aitchison College, Lahore", signatory: "A. Khan", motto: "Perseverance Commands Success" },
+                    { name: "Karachi Grammar School, Karachi", signatory: "S. Ali", motto: "Deus Dux Noster" },
+                    { name: "Roots Millennium School, Islamabad", signatory: "F. Ahmed", motto: "Educating for the Future" },
+                    { name: "Lahore University of Management Sciences (LUMS)", signatory: "Dr. S. Kamal", motto: "Learning Without Borders" },
+                    { name: "National University of Sciences & Technology (NUST)", signatory: "Gen. (R) J. Mirza", motto: "Defining Futures" },
+                    { name: "Institute of Business Administration (IBA Karachi)", signatory: "Dr. A. Irtaza", motto: "Leadership and Ideas for Tomorrow" },
+                    { name: "Beaconhouse School System", signatory: "N. M. Kasuri", motto: "Seek the Light" },
+                    { name: "Quaid-e-Azam University, Islamabad", signatory: "Deputy Treasurer", motto: "Excellence in Research and Education" },
+                    { name: "University of the Punjab, Lahore", signatory: "Treasurer", motto: "Knowledge, Character, Leadership" },
+                    { name: "COMSATS University, Islamabad", signatory: "Accounts Officer", motto: "Innovation and Excellence" }
+                ],
+                names: ["Ayesha Khan", "Bilal Ahmed", "Fatima Ali", "Usman Qureshi", "Zainab Malik", "Saad Hasan", "Hina Tariq", "Ali Raza", "Sana Iqbal", "Hamza Butt"],
+                programs: ["BSCS", "A-Levels", "Matric", "F.Sc (Pre-Eng)", "BBA", "BS English", "9th Grade", "BS AI", "MBA", "BS Psychology"]
+            },
+            bd: {
+                color: '#006a4e', // BD Green
+                schools: [
+                    { name: "Dhaka Residential Model College, Dhaka", signatory: "M. Rahman", motto: "Education, Morality, Discipline" },
+                    { name: "Ideal School and College, Dhaka", signatory: "A. Begum", motto: "Strive for Excellence" },
+                    { name: "University of Dhaka", signatory: "Prof. Dr. A. S. M. Maksud", motto: "Truth Shall Prevail" },
+                    { name: "BUET, Dhaka", signatory: "Dr. S. Rahman", motto: "Excellence in Engineering" },
+                    { name: "North South University, Dhaka", signatory: "Prof. A. Iqbal", motto: "Center of Excellence" },
+                    { name: "BRAC University, Dhaka", signatory: "V. P. Change", motto: "Inspiring Excellence" },
+                    { name: "Notre Dame College, Dhaka", signatory: "Dr. H. P. Rozario", motto: "Diligence, Purity, Love" }
+                ],
+                names: ["Rahim Islam", "Afia Rahman", "Karim Hossain", "Jannat Begum", "Tamim Ahmed", "Nusrat Jahan", "Mehedi Hasan", "Sakib Al Hasan", "Maria Akter"],
+                programs: ["BBA", "HSC (Science)", "CSE", "Class 10", "MBA", "English Dept.", "MBBS", "LLB"]
+            },
+            in: {
+                color: '#138808', // IN Green
+                schools: [
+                    { name: "Delhi Public School, New Delhi", signatory: "R. Sharma", motto: "Service Before Self" },
+                    { name: "Mumbai Scottish School, Mumbai", signatory: "P. Mehta", motto: "Knowledge is Infinite" },
+                    { name: "IIT Delhi", signatory: "Prof. R. Banerjee", motto: "Success is our Tradition" },
+                    { name: "University of Delhi", signatory: "Prof. Y. Singh", motto: "Nistha Dhriti Satyam" },
+                    { name: "St. Xavier's College, Mumbai", signatory: "Dr. K. D'Cruz", motto: "Lucet et Ardet" },
+                    { name: "Indian Institute of Science (IISc Bangalore)", signatory: "Prof. G. Rangarajan", motto: "Knowledge is Supreme" },
+                    { name: "The Doon School, Dehradun", signatory: "J. M. Singh", motto: "Knowledge Our Guide" }
+                ],
+                names: ["Pooja Singh", "Rohan Gupta", "Aditi Sharma", "Vikram Patel", "Sneha Kumar", "Arjun Nair", "Meera Reddy", "Amit Verma", "Priya Jain"],
+                programs: ["B.Tech (CSE)", "12th Grade (Science)", "B.Com", "BA (Hons)", "Class 10", "MCA", "MBBS", "B.Arch"]
+            }
+        };
+
+
+        // --- Utility Functions ---
+
+        // Pick a random item from array
+        function pickRandom(arr) { 
+            if (!arr || arr.length === 0) return ''; // Safety check
+            return arr[Math.floor(Math.random() * arr.length)]; 
+        }
+
+        // Generate random barcode spans
+        function generateBarcodeSpans() {
+            let html = '';
+            for (let i = 0; i < 40; i++) {
+                const width = Math.floor(Math.random() * 3) + 1;
+                html += `<span style="width:${width}px"></span>`;
+            }
+            return html;
+        }
+
+        // Ensure html2canvas and jsPDF are available
+        function ensurePdfLibs() {
+            const tasks = [];
+            if (typeof html2canvas !== 'function') {
+                tasks.push(loadScript('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'));
+            }
+            const hasJsPDF = (window.jspdf && window.jspdf.jsPDF) || (window.jspdf && window.jspdf.default);
+            if (!hasJsPDF) {
+                tasks.push(loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'));
+            }
+            if (tasks.length === 0) return Promise.resolve();
+            return Promise.all(tasks);
+        }
+
+        // Dynamically load a script
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error('Failed to load ' + src));
+                document.head.appendChild(script);
+            });
+        }
+        
+        // Function to create placeholder logo URL
+        function createLogoUrl(name, color) {
+            const initials = name.replace(/\(.*\)/g, '') // Remove (text)
+                                 .replace(/,.*/g, '')   // Remove , text
+                                 .split(' ')
+                                 .map(s => s.charAt(0))
+                                 .join('')
+                                 .substring(0, 3)
+                                 .toUpperCase();
+            const bgColor = 'eeeeee';
+            const textColor = (color || '#006a4e').replace('#', '');
+            return `https://placehold.co/100x100/${bgColor}/${textColor}?text=${initials}&font=inter`;
+        }
+
+        // Get local logo filename based on country
+        function getLocalLogoFileForCountry(countryCode) {
+            if (countryCode === 'pk') return 'University-Logo.png';
+            if (countryCode === 'bd') return 'University-Logo1.png';
+            if (countryCode === 'in') return 'University-Logo2.png';
+            return 'University-Logo.png';
+        }
+
+        // --- Main Application Logic ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('sid-cardForm');
+            if (!form) {
+                console.error("Form 'sid-cardForm' not found. Exiting.");
+                return;
+            }
+
+            // Get all elements
+            const schoolSelect = document.getElementById('sid-schoolSelect');
+            const studentNameInput = document.getElementById('sid-studentName');
+            const programInput = document.getElementById('sid-program');
+            const studentIDInput = document.getElementById('sid-studentID');
+            const validThruInput = document.getElementById('sid-validThru');
+            const photoUploadInput = document.getElementById('sid-photoUpload');
+            
+            const btnAutofill = document.getElementById('sid-btnAutofill');
+            const btnGenerate = document.getElementById('sid-btnGenerate');
+            
+            const inputPage = document.getElementById('inputPage');
+            const previewPage = document.getElementById('previewPage');
+            
+            // This is the HIDDEN preview container on Page 1
+            const uiPreviewContainer = document.getElementById('sid-preview-container'); 
+            
+            // This is the VISIBLE preview box on Page 2
+            const mainPreviewBox = document.getElementById('sid-preview-box-main');
+            
+            const btnImage = document.getElementById('sid-btnImage');
+            const btnPrint = document.getElementById('sid-btnPrint');
+            const btnBack = document.getElementById('sid-btnBack');
+            
+            // This is the HIDDEN card element on Page 1
+            const cardToPrint = document.getElementById('sid-cardToPrint');
+
+            let currentCountry = 'pk'; // Default country
+            let generatedCardHTML = ''; // To store the generated card for the preview page
+
+            // Function to update dropdowns and theme
+            function updateCountryUI(countryCode) {
+                currentCountry = countryCode;
+                document.body.dataset.theme = countryCode;
+                const data = studentIdCountryData[countryCode];
+                
+                schoolSelect.innerHTML = '<option value="">Select Institution</option>'; // Clear
+                
+                data.schools.forEach((school, index) => {
+                    const option = new Option(school.name, index);
+                    schoolSelect.appendChild(option);
+                });
+                
+                // Update placeholders
+                const exampleName = pickRandom(data.names);
+                const exampleSchool = pickRandom(data.schools);
+                const exampleProgram = pickRandom(data.programs);
+                
+                // Clean name for ID prefix (remove parentheses)
+                const cleanSchoolName = exampleSchool.name.replace(/,.*/g, '').replace(/\(.*\)/g, '').trim();
+                const exampleIdPrefix = cleanSchoolName.split(' ')
+                                                     .map(s => s.charAt(0))
+                                                     .join('')
+                                                     .substring(0, 4)
+                                                     .toUpperCase();
+                                                     
+                studentNameInput.placeholder = `e.g., ${exampleName}`;
+                studentIDInput.placeholder = `e.g., ${exampleIdPrefix}${Math.floor(10000 + Math.random() * 90000)}`;
+                programInput.placeholder = `e.g., ${exampleProgram}`;
+                validThruInput.placeholder = 'e.g., 08/2028';
+            }
+
+            // Auto-fill form with random data
+            function autofillForm() {
+                const data = studentIdCountryData[currentCountry];
+                
+                const randomSchoolIndex = Math.floor(Math.random() * data.schools.length);
+                schoolSelect.value = randomSchoolIndex;
+                
+                const school = data.schools[randomSchoolIndex];
+                
+                studentNameInput.value = pickRandom(data.names);
+                programInput.value = pickRandom(data.programs);
+                
+                const cleanSchoolName = school.name.replace(/,.*/g, '').replace(/\(.*\)/g, '').trim();
+                const idPrefix = cleanSchoolName.split(' ')
+                                               .map(s => s.charAt(0))
+                                               .join('')
+                                               .substring(0, 4)
+                                               .toUpperCase();
+                                               
+                studentIDInput.value = `${idPrefix}${Math.floor(10000 + Math.random() * 90000)}`;
+                
+                const randomYear = new Date().getFullYear() + Math.floor(Math.random() * 3) + 2;
+                const randomMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+                validThruInput.value = `${randomMonth}/${randomYear}`;
+                
+                // Clear file input as we can't autofill it
+                photoUploadInput.value = ''; 
+                form.classList.remove('was-validated');
+            }
+
+            // NEW: Validate form
+            function validateForm() {
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    const firstInvalid = form.querySelector(':invalid');
+                    if (firstInvalid) firstInvalid.focus();
+                    showErrorModal('Please fill out all required fields, including the photo.', 'Validation Error');
+                    return false;
+                }
+                const file = photoUploadInput.files[0];
+                if (!file) {
+                    form.classList.add('was-validated');
+                    photoUploadInput.focus();
+                    showErrorModal('Please upload a photo.', 'Validation Error');
+                    return false;
+                }
+                form.classList.remove('was-validated');
+                return true;
+            }
+
+
+            // Populate the HIDDEN card elements
+            function populateCardUI(photoDataUrl) {
+                const data = studentIdCountryData[currentCountry];
+                if (!schoolSelect.value) {
+                     // This should not happen if validation passes, but as a fallback.
+                    throw new Error("No institution selected.");
+                }
+                const school = data.schools[schoolSelect.value];
+
+                // Determine local logo file by country
+                const localLogoFile = getLocalLogoFileForCountry(currentCountry);
+
+                // Set logo imgs to local file, and fallback to generated placeholder if local file not found
+                const logoImgEl = document.getElementById('sid-logoOnCard');
+                const watermarkImgEl = document.getElementById('sid-watermarkLogoOnCard');
+
+                // Attach onerror fallback to placeholder generator
+                logoImgEl.onerror = function() { 
+                    // prevent infinite loop
+                    this.onerror = null; 
+                    this.src = createLogoUrl(school.name, data.color); 
+                };
+                watermarkImgEl.onerror = function() {
+                    this.onerror = null;
+                    this.src = createLogoUrl(school.name, data.color);
+                };
+
+                // Try to use local logo file first
+                logoImgEl.src = localLogoFile;
+                watermarkImgEl.src = localLogoFile;
+
+                // Set other fields
+                document.getElementById('sid-schoolNameOnCard').textContent = school.name.split(',')[0].replace(/\(.*\)/g, '').trim(); // Clean name
+                document.getElementById('sid-footerOnCard').textContent = school.motto;
+                document.getElementById('sid-signatoryOnCard').textContent = school.signatory;
+                document.getElementById('sid-signatoryTitleOnCard').textContent = school.signatoryTitle || 'Authorized Signatory';
+                
+                const studentName = studentNameInput.value;
+                document.getElementById('sid-studentNameOnCard').textContent = studentName;
+                document.getElementById('sid-programOnCard').textContent = programInput.value;
+                
+                const studentID = studentIDInput.value;
+                document.getElementById('sid-studentIdOnCard').textContent = studentID;
+                document.getElementById('sid-validThruOnCard').textContent = validThruInput.value;
+                document.getElementById('sid-photoOnCard').src = photoDataUrl;
+                
+                // Set session
+                const currentYear = new Date().getFullYear();
+                document.getElementById('sid-sessionOnCard').textContent = `Academic Session ${currentYear}-${currentYear + 1}`;
+                
+                // Barcode
+                document.getElementById('sid-barcodeOnCard').innerHTML = generateBarcodeSpans();
+                document.getElementById('sid-barcodeTextOnCard').textContent = studentID;
+            }
+
+            // --- Page Switching ---
+            // This function is called when "Generate ID Card" is clicked
+            function showPreviewPage() {
+                // 1. Validate form
+                if (!validateForm()) {
+                    return; // Stop if validation fails
+                }
+                
+                // 2. Read file
+                const file = photoUploadInput.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        // 3. Get photo data
+                        const photoDataUrl = e.target.result;
+                        
+                        // 4. Populate the HIDDEN card on Page 1
+                        populateCardUI(photoDataUrl);
+                        
+                        // 5. Store the HTML of the now-populated hidden card
+                        generatedCardHTML = cardToPrint.innerHTML;
+                        
+                        // 6. Populate the PREVIEW page's box with this HTML
+                        mainPreviewBox.innerHTML = `<div id="sid-cardToDownload" class="id-card-portrait">${generatedCardHTML}</div>`;
+                        
+                        // 7. Switch pages
+                        inputPage.style.display = 'none';
+                        previewPage.style.display = 'block';
+                        window.scrollTo(0, 0);
+
+                    } catch (error) {
+                        console.error("Error creating card:", error);
+                        showErrorModal('Could not generate card: ' + error.message);
+                    }
+                };
+                reader.onerror = () => {
+                     showErrorModal('Could not read the uploaded file.');
+                };
+                reader.readAsDataURL(file);
+            }
+
+
+            function goBackToForm() {
+                previewPage.style.display = 'none';
+                inputPage.style.display = 'block';
+                generatedCardHTML = ''; // Clear stored HTML
+                mainPreviewBox.innerHTML = ''; // Clear preview box
+            }
+
+            // --- Download/Print Functions ---
+            
+            function downloadImage() {
+                const btn = document.getElementById('sid-btnImage');
+                if (!btn) return;
+                
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+                
+                // Get the card element from the preview page
+                const cardElement = document.getElementById('sid-cardToDownload');
+                if (!cardElement) {
+                    showErrorModal('Could not find card element to download.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-image-fill"></i> Download as Image';
+                    return;
+                }
+
+                ensurePdfLibs() // We just need html2canvas, but this ensures it's loaded
+                    .then(() => {
+                        html2canvas(cardElement, {
+                            scale: 3, // High resolution
+                            useCORS: true,
+                            backgroundColor: '#ffffff',
+                            logging: false,
+                            width: cardElement.offsetWidth, // Use explicit width
+                            height: cardElement.offsetHeight, // Use explicit height
+                        }).then((canvas) => {
+                            const imgData = canvas.toDataURL('image/png');
+                            
+                            // Create a link to download
+                            const link = document.createElement('a');
+                            link.href = imgData;
+                            link.download = `Student_ID_${studentIDInput.value || 'Card'}.png`;
+                            
+                            // Trigger download
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+
+                        }).catch(err => {
+                            showErrorModal('Image generation failed: ' + err.message);
+                            console.error(err);
+                        }).finally(() => {
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="bi bi-image-fill"></i> Download as Image';
+                        });
+                    })
+                    .catch(err => {
+                        showErrorModal('Failed to load image library: ' + err.message);
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bi bi-image-fill"></i> Download as Image';
+                    });
+            }
+
+            function printCard() {
+                // Temporarily replace body content with just the card for printing
+                const originalBody = document.body.innerHTML;
+                const cardHTML = `<div id="sid-cardToPrint" style="width: 85.6mm; margin: 30mm auto;">${generatedCardHTML}</div>`;
+                
+                document.body.innerHTML = cardHTML;
+                window.print();
+                document.body.innerHTML = originalBody;
+                
+                // Re-bind all listeners since we replaced the DOM
+                rebindAllListeners();
+                
+                // We are now on the preview page, so make sure it's visible
+                inputPage.style.display = 'none';
+                previewPage.style.display = 'block';
+                mainPreviewBox.innerHTML = `<div id="sid-cardToDownload" class="id-card-portrait">${generatedCardHTML}</div>`;
+            }
+            
+            // --- Event Listener Binding ---
+            function rebindAllListeners() {
+                // Re-find elements
+                const newForm = document.getElementById('sid-cardForm');
+                const newBtnAutofill = document.getElementById('sid-btnAutofill');
+                const newBtnGenerate = document.getElementById('sid-btnGenerate');
+                const newCountryRadios = document.querySelectorAll('input[name="country"]');
+                const newBtnImage = document.getElementById('sid-btnImage');
+                const newBtnPrint = document.getElementById('sid-btnPrint');
+                const newBtnBack = document.getElementById('sid-btnBack');
+                const newHomeButtons = document.querySelectorAll('.btn-home'); // Get all home buttons
+                
+                // Form page listeners
+                if (newForm) {
+                    newForm.addEventListener('submit', (e) => { e.preventDefault(); showPreviewPage(); });
+                }
+                if (newBtnGenerate) {
+                     newBtnGenerate.addEventListener('click', (e) => { e.preventDefault(); showPreviewPage(); });
+                }
+                if (newBtnAutofill) {
+                    newBtnAutofill.addEventListener('click', autofillForm);
+                }
+                newCountryRadios.forEach(radio => {
+                    radio.addEventListener('change', () => updateCountryUI(radio.value));
+                });
+                
+                // Preview page listeners
+                if (newBtnImage) {
+                    newBtnImage.addEventListener('click', downloadImage);
+                }
+                if (newBtnPrint) {
+                    newBtnPrint.addEventListener('click', printCard);
+                }
+                if (newBtnBack) {
+                    newBtnBack.addEventListener('click', goBackToForm);
+                }
+                
+                // Home buttons (both pages)
+                newHomeButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault(); 
+                        window.location.href = 'index.html';
+                    });
+                });
+                
+                // Re-initialize modal
+                const modalElement = document.getElementById('errorModal');
+                if (modalElement) {
+                    errorModalInstance = new bootstrap.Modal(modalElement);
+                }
+            }
+
+            // --- Initial Setup ---
+            rebindAllListeners(); // Bind all listeners on first load
+            updateCountryUI('pk'); // Initialize with default country
+
+        });
+        
+    </script>
+</body>
+</html>
