@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zong | Advance Loan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --bg-dark: #020617;
+        --card-bg: #0f172a;
+        --accent-primary: #3b82f6; /* Blue */
+        --accent-success: #22c55e; /* Green */
+        --accent-danger: #ef4444; /* Red */
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-surface: rgba(15, 23, 42, 0.6);
+        --whatsapp-green: #22c55e;
+    }
+
+    body {
+        background-color: var(--bg-dark);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(34, 197, 94, 0.15) 0px, transparent 50%);
+        font-family: 'Outfit', sans-serif;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* --- Layout --- */
+    .app-wrapper {
+        width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 20px;
+    }
+
+    /* --- Header --- */
+    .glass-nav {
+        background: var(--glass-surface);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px; padding: 16px;
+        display: flex; align-items: center; justify-content: space-between;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+    .back-btn {
+        width: 40px; height: 40px; border-radius: 12px;
+        background: rgba(255,255,255,0.05); color: #94a3b8;
+        display: flex; align-items: center; justify-content: center;
+        transition: 0.3s; text-decoration: none;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+    /* --- Status Card --- */
+    .status-card {
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+        border: 1px solid var(--glass-border); border-radius: 32px;
+        padding: 30px; text-align: center; position: relative; overflow: hidden;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
+        min-height: 200px; display: flex; flex-direction: column; justify-content: center;
+    }
+    
+    /* Status Variations */
+    .status-card.checking { border-bottom: 4px solid #94a3b8; }
+    .status-card.eligible { border-bottom: 4px solid var(--accent-success); }
+    .status-card.due { border-bottom: 4px solid var(--accent-danger); }
+
+    .status-icon-glow {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        font-size: 8rem; opacity: 0.05; z-index: 0;
+    }
+
+    .main-amount { font-size: 3rem; font-weight: 800; line-height: 1; position: relative; z-index: 1; }
+    .main-label { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: #94a3b8; margin-bottom: 5px; position: relative; z-index: 1; }
+    .main-sub { font-size: 0.9rem; color: #cbd5e1; margin-top: 10px; position: relative; z-index: 1; }
+
+    /* --- Options List --- */
+    .option-card {
+        background: var(--glass-surface);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px; padding: 20px;
+        margin-bottom: 15px; transition: 0.3s;
+    }
+    .option-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
+
+    .opt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .opt-title { font-size: 1.1rem; font-weight: 700; color: white; }
+    .opt-amount { font-size: 1.2rem; font-weight: 800; color: var(--accent-success); }
+
+    .info-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: #94a3b8; margin-bottom: 6px; }
+    .info-val { color: #e2e8f0; font-weight: 600; }
+
+    .get-btn {
+        width: 100%; padding: 14px; margin-top: 15px;
+        background: white; color: black; border: none; border-radius: 16px;
+        font-weight: 700; font-size: 0.95rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        transition: 0.2s;
+    }
+    .get-btn:hover { background: #e2e8f0; transform: scale(1.02); }
+    
+    /* Double Loan Variant */
+    .option-card.double { border-color: rgba(59, 130, 246, 0.3); background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), transparent); }
+    .option-card.double .opt-amount { color: #60a5fa; }
+    .option-card.double .get-btn { background: #3b82f6; color: white; }
+    .option-card.double .get-btn:hover { background: #2563eb; }
+
+    /* --- Channel Card --- */
+    .wa-card {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 24px; padding: 16px;
+        display: flex; align-items: center; gap: 15px;
+        text-decoration: none; transition: 0.3s; margin-top: 10px;
+    }
+    .wa-card:hover { transform: translateY(-3px); border-color: var(--whatsapp-green); background: rgba(34, 197, 94, 0.15); }
+    .wa-icon-box {
+        width: 48px; height: 48px; border-radius: 14px;
+        background: var(--whatsapp-green); color: white;
+        display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    }
+
+    /* --- Loader --- */
+    .loader {
+        width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1);
+        border-top-color: var(--accent-primary); border-radius: 50%;
+        animation: spin 1s infinite linear; margin: 0 auto 15px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* --- Toast --- */
+    .toast {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+        background: #1f1f22; border: 1px solid #333; padding: 14px 24px;
+        border-radius: 50px; display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 100; opacity: 0; transition: 0.4s;
+        min-width: 300px;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .t-icon { font-size: 1.2rem; }
+    .t-success { color: var(--accent-success); }
+    .t-error { color: var(--accent-danger); }
+
+</style>
+</head>
+<body>
+
+    <div id="toastBox" class="toast">
+        <div id="toastIcon"></div>
+        <span id="toastMsg" class="text-sm font-medium text-gray-200"></span>
+    </div>
+
+    <div class="app-wrapper">
+        
+        <nav class="glass-nav">
+            <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+            <span class="font-bold text-lg tracking-tight">Advance Loan</span>
+            <div class="w-10"></div>
+        </nav>
+
+        <div id="statusCard" class="status-card checking">
+            <i class="fas fa-wallet status-icon-glow" id="bgIcon"></i>
+            
+            <div id="loaderArea">
+                <div class="loader"></div>
+                <p class="text-gray-400 text-sm animate-pulse" id="statusText">Analyzing account...</p>
+            </div>
+
+            <div id="contentArea" class="hidden">
+                <p class="main-label" id="mainLabel">STATUS</p>
+                <div class="main-amount" id="mainDisplay">--</div>
+                <p class="main-sub" id="subDisplay">...</p>
+                
+                <div class="mt-6 pt-4 border-t border-white/10 flex justify-between text-xs text-gray-400">
+                    <span>TX Remaining</span>
+                    <span class="text-white font-bold" id="txCount">--</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="offersArea" class="hidden">
+            <div class="flex items-center gap-2 mb-4 px-2">
+                <i class="fas fa-bolt text-yellow-400"></i>
+                <h3 class="font-bold text-gray-300 uppercase text-xs tracking-widest">Available Offers</h3>
+            </div>
+            <div id="cardsContainer"></div>
+        </div>
+
+        <a href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank" class="wa-card">
+            <div class="wa-icon-box"><i class="fab fa-whatsapp"></i></div>
+            <div class="flex-1">
+                <h3 class="text-white font-bold text-sm">Join Official Channel</h3>
+                <p class="text-gray-400 text-xs">Get updates & free codes</p>
+            </div>
+            <i class="fas fa-chevron-right text-gray-500"></i>
+        </a>
+
+    </div>
+
+<script>
+// --- CONFIGURATION ---
+const API_BASE = 'https://zong-claim.onrender.com'; 
+const msisdn = localStorage.getItem('msisdn');
+const token = localStorage.getItem('token');
+let loginRequestBody = {};
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const stored = localStorage.getItem('loginRequestBody');
+        if (stored) loginRequestBody = JSON.parse(stored);
+    } catch (e) { console.error("JSON Error"); }
+    
+    if (!token || !msisdn) {
+        showToast("Session expired", "error");
+        setTimeout(() => window.location.href='index.html', 2000);
+        return;
+    }
+
+    startLoop();
+});
+
+// --- API LOOP ---
+async function startLoop() {
+    let success = false;
+    let attempt = 1;
+
+    while (!success) {
+        document.getElementById('statusText').innerText = `Checking Eligibility (Try ${attempt})...`;
+        
+        try {
+            const cleanMsisdn = msisdn.startsWith('0') ? msisdn.substring(1) : msisdn;
+            
+            const res = await fetch(`${API_BASE}/loan`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'MZA-TOKEN': `${cleanMsisdn}$${token}`
+                },
+                body: JSON.stringify(loginRequestBody)
+            });
+
+            const data = await res.json();
+
+            if (data.Result === true && data.ResultContent) {
+                success = true;
+                renderData(data.ResultContent);
+            } else {
+                await new Promise(r => setTimeout(r, 2000));
+                attempt++;
+            }
+        } catch (e) {
+            await new Promise(r => setTimeout(r, 2000));
+            attempt++;
+        }
+    }
+}
+
+// --- RENDER LOGIC ---
+function renderData(content) {
+    document.getElementById('loaderArea').style.display = 'none';
+    document.getElementById('contentArea').classList.remove('hidden');
+
+    const segment = content.LoanSegment || {};
+    const single = content.SinlgeLoan || content.SingleLoan;
+    const double = content.DoubleLoan;
+    
+    const loanToReturn = parseFloat(segment.LoanToReturn || 0);
+    const availableAmt = parseFloat(segment.AvailableLoanAmout || 0);
+    
+    const card = document.getElementById('statusCard');
+    const label = document.getElementById('mainLabel');
+    const display = document.getElementById('mainDisplay');
+    const sub = document.getElementById('subDisplay');
+    const icon = document.getElementById('bgIcon');
+
+    // 1. Update Status Card
+    card.className = 'status-card'; // Reset
+    
+    if (loanToReturn > 0) {
+        // Pending Loan
+        card.classList.add('due');
+        label.innerText = "Outstanding Balance";
+        label.style.color = "#f87171";
+        display.innerText = `Rs. ${loanToReturn}`;
+        sub.innerText = "Please repay to unlock new loans.";
+        icon.className = "fas fa-exclamation-triangle status-icon-glow";
+    } else {
+        // Eligible
+        card.classList.add('eligible');
+        label.innerText = "Credit Limit";
+        label.style.color = "#4ade80";
+        display.innerText = `Rs. ${availableAmt}`;
+        sub.innerText = "You are eligible for an instant loan.";
+        icon.className = "fas fa-check-circle status-icon-glow";
+        
+        // Only show offers if eligible
+        document.getElementById('offersArea').classList.remove('hidden');
+        renderOffers(single, double);
+    }
+
+    document.getElementById('txCount').innerText = segment.AvailableTransactions || '0';
+}
+
+function renderOffers(single, double) {
+    const container = document.getElementById('cardsContainer');
+    container.innerHTML = '';
+
+    if (single && parseFloat(single.LoanAmount) > 0) {
+        container.innerHTML += createCard("Standard Advance", single, false);
+    }
+
+    if (double && parseFloat(double.LoanAmount) > 0) {
+        // Avoid duplicates if amounts are same
+        if(!single || double.LoanAmount !== single.LoanAmount) {
+            container.innerHTML += createCard("Double Advance", double, true);
+        }
+    }
+}
+
+function createCard(title, data, isDouble) {
+    const cls = isDouble ? "option-card double" : "option-card";
+    const btnText = isDouble ? "Get Double Loan" : "Get Standard Loan";
+    const icon = isDouble ? "fa-bolt" : "fa-arrow-right";
+
+    return `
+    <div class="${cls}">
+        <div class="opt-header">
+            <span class="opt-title">${title}</span>
+            <span class="opt-amount">Rs. ${data.LoanAmount}</span>
+        </div>
+        <div class="info-row"><span>Service Fee</span><span class="info-val">Rs. ${data.ServiceFee}</span></div>
+        <div class="info-row"><span>Total Return</span><span class="info-val">Rs. ${data.TotalPayable}</span></div>
+        <div class="info-row"><span>Recharge Req.</span><span class="info-val">Rs. ${data.RechargeRequired}</span></div>
+        
+        <button class="get-btn" onclick="showToast('Dial *911# to confirm activation', 'info')">
+            <span>${btnText}</span>
+            <i class="fas ${icon}"></i>
+        </button>
+    </div>`;
+}
+
+// --- TOAST ---
+function showToast(msg, type) {
+    const box = document.getElementById('toastBox');
+    const icon = document.getElementById('toastIcon');
+    document.getElementById('toastMsg').innerText = msg;
+
+    if (type === 'error') icon.innerHTML = '<i class="fas fa-times-circle t-error t-icon"></i>';
+    else if (type === 'info') icon.innerHTML = '<i class="fas fa-info-circle text-blue-400 t-icon"></i>';
+    else icon.innerHTML = '<i class="fas fa-check-circle t-success t-icon"></i>';
+
+    box.classList.add('show');
+    setTimeout(() => box.classList.remove('show'), 3500);
+}
+</script>
+</body>
+        </html>
+            
