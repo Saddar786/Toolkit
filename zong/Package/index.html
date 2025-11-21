@@ -1,0 +1,452 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zong Premium Store</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --app-bg: #050505;
+        --card-surface: #121214;
+        --primary-grad: linear-gradient(135deg, #84cc16 0%, #10b981 100%);
+        --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    body {
+        background-color: var(--app-bg);
+        color: white;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .glass-nav {
+        background: rgba(5, 5, 5, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    /* Modern Cards */
+    .bundle-card {
+        background: var(--card-surface);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        overflow: hidden;
+        position: relative;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .bundle-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(132, 204, 22, 0.4);
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7);
+    }
+
+    .card-gradient {
+        position: absolute; top: 0; left: 0; right: 0; height: 120px;
+        opacity: 0.15; z-index: 0;
+    }
+
+    .card-content { position: relative; z-index: 1; padding: 1.5rem; }
+
+    .badge {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;
+        text-transform: uppercase; padding: 6px 12px; border-radius: 50px;
+        background: rgba(255,255,255,0.08); color: #9ca3af;
+        display: inline-block; margin-bottom: 1rem;
+    }
+
+    .price-display {
+        font-size: 1.75rem; font-weight: 800; letter-spacing: -1px;
+        background: var(--primary-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* Buttons */
+    .btn-activate {
+        width: 100%; padding: 12px; border-radius: 14px;
+        font-weight: 700; font-size: 0.95rem;
+        background: white; color: black; border: none; cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-activate:hover { background: #e2e8f0; transform: scale(1.02); }
+    
+    .btn-details {
+        width: 100%; padding: 12px; border-radius: 14px;
+        font-weight: 600; font-size: 0.9rem;
+        background: rgba(255,255,255,0.05); color: white;
+        border: 1px solid transparent; cursor: pointer; transition: 0.2s;
+    }
+    .btn-details:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.1); }
+
+    /* Modal & Toast */
+    .modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+        z-index: 50; display: flex; align-items: center; justify-content: center;
+        opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px;
+    }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    
+    .modal-box {
+        background: #18181b; border: 1px solid #333; border-radius: 24px;
+        width: 100%; max-width: 400px; transform: scale(0.95); transition: 0.3s;
+    }
+    .modal-overlay.active .modal-box { transform: scale(1); }
+
+    .toast {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+        background: #1f1f22; border: 1px solid #333; padding: 16px 24px;
+        border-radius: 50px; display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 100; opacity: 0; transition: 0.4s;
+        min-width: 320px;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+    <nav class="glass-nav fixed top-0 w-full z-40 px-5 py-4 flex justify-between items-center">
+        <a href="dashboard.html" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition">
+            <i class="fas fa-arrow-left text-gray-300"></i>
+        </a>
+        <div class="text-center">
+            <h1 class="text-lg font-bold tracking-tight">Bundle Store</h1>
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Premium Selection</p>
+        </div>
+        <div class="w-10"></div>
+    </nav>
+
+    <main class="container mx-auto px-4 pt-24 pb-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            <div class="bundle-card group" data-name="TIKTOK MEGA" data-price="Rs. 9">
+                <div class="card-gradient bg-gradient-to-b from-yellow-500/20 to-transparent"></div>
+                <div class="card-content">
+                    <div class="flex justify-between items-start">
+                        <span class="badge text-yellow-200 border border-yellow-500/30">Night Only</span>
+                        <div class="text-2xl text-yellow-400"><i class="fab fa-tiktok"></i></div>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4">TikTok Mega</h3>
+                    <p class="text-gray-400 text-sm mt-1">100 GB • 11 PM - 11 AM</p>
+                    <div class="mt-4 flex items-end gap-2">
+                        <span class="price-display">Rs. 9</span>
+                        <span class="text-sm text-gray-500 mb-2">/ 7 Days</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+                        <button class="btn-details" onclick="viewDetails('tiktok')">Details</button>
+                        <button class="btn-activate" onclick="showConfirmation('95007483', this)">Activate</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bundle-card group" data-name="DAILY COMBO" data-price="Rs. 50">
+                <div class="card-gradient bg-gradient-to-b from-blue-500/20 to-transparent"></div>
+                <div class="card-content">
+                    <div class="flex justify-between items-start">
+                        <span class="badge text-blue-200 border border-blue-500/30">24 Hours</span>
+                        <div class="text-2xl text-blue-400"><i class="fas fa-bolt"></i></div>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4">Daily Combo</h3>
+                    <p class="text-gray-400 text-sm mt-1">2GB • 1000 Mins • 1000 SMS</p>
+                    <div class="mt-4 flex items-end gap-2">
+                        <span class="price-display">Rs. 50</span>
+                        <span class="text-sm text-gray-500 mb-2">/ 1 Day</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+                        <button class="btn-details" onclick="viewDetails('daily')">Details</button>
+                        <button class="btn-activate" onclick="showConfirmation('95007015', this)">Activate</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bundle-card group" data-name="STUDENT BUNDLE" data-price="Rs. 250">
+                <div class="card-gradient bg-gradient-to-b from-red-500/20 to-transparent"></div>
+                <div class="card-content">
+                    <div class="flex justify-between items-start">
+                        <span class="badge text-red-200 border border-red-500/30">Students</span>
+                        <div class="text-2xl text-red-400"><i class="fas fa-graduation-cap"></i></div>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4">Student Bundle</h3>
+                    <p class="text-gray-400 text-sm mt-1">25 GB • 4000 Mins/SMS</p>
+                    <div class="mt-4 flex items-end gap-2">
+                        <span class="price-display">Rs. 250</span>
+                        <span class="text-sm text-gray-500 mb-2">/ 7 Days</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+                        <button class="btn-details" onclick="viewDetails('student')">Details</button>
+                        <button class="btn-activate" onclick="showConfirmation('95007502', this)">Activate</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bundle-card group" data-name="APNA SHER SUPREME" data-price="Rs. 380">
+                <div class="card-gradient bg-gradient-to-b from-orange-500/20 to-transparent"></div>
+                <div class="card-content">
+                    <div class="flex justify-between items-start">
+                        <span class="badge text-orange-200 border border-orange-500/30">Regional</span>
+                        <div class="text-2xl text-orange-400"><i class="fas fa-crown"></i></div>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4">Apna Sher Supreme</h3>
+                    <p class="text-gray-400 text-sm mt-1">20 GB • 4000 Zong Mins</p>
+                    <div class="mt-4 flex items-end gap-2">
+                        <span class="price-display">Rs. 380</span>
+                        <span class="text-sm text-gray-500 mb-2">/ 7 Days</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+                        <button class="btn-details" onclick="viewDetails('supreme')">Details</button>
+                        <button class="btn-activate" onclick="showConfirmation('95005186', this)">Activate</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bundle-card group" data-name="APNA SHER EXTREME" data-price="Rs. 400">
+                <div class="card-gradient bg-gradient-to-b from-purple-500/20 to-transparent"></div>
+                <div class="card-content">
+                    <div class="flex justify-between items-start">
+                        <span class="badge text-purple-200 border border-purple-500/30">Regional</span>
+                        <div class="text-2xl text-purple-400"><i class="fas fa-fire"></i></div>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4">Apna Sher Extreme</h3>
+                    <p class="text-gray-400 text-sm mt-1">25 GB • 180 Off-Net</p>
+                    <div class="mt-4 flex items-end gap-2">
+                        <span class="price-display">Rs. 400</span>
+                        <span class="text-sm text-gray-500 mb-2">/ 7 Days</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+                        <button class="btn-details" onclick="viewDetails('extreme')">Details</button>
+                        <button class="btn-activate" onclick="showConfirmation('95004966', this)">Activate</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bundle-card group" data-name="MONTHLY SOCIAL" data-price="Rs. 500">
+                <div class="card-gradient bg-gradient-to-b from-indigo-500/20 to-transparent"></div>
+                <div class="card-content">
+                    <div class="flex justify-between items-start">
+                        <span class="badge text-indigo-200 border border-indigo-500/30">Monthly</span>
+                        <div class="text-2xl text-indigo-400"><i class="fas fa-share-alt"></i></div>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4">Monthly Social</h3>
+                    <p class="text-gray-400 text-sm mt-1">20 GB Social • 500 SMS</p>
+                    <div class="mt-4 flex items-end gap-2">
+                        <span class="price-display">Rs. 500</span>
+                        <span class="text-sm text-gray-500 mb-2">/ 30 Days</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+                        <button class="btn-details" onclick="viewDetails('social')">Details</button>
+                        <button class="btn-activate" onclick="showConfirmation('95004547', this)">Activate</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bundle-card group" data-name="MY M5 CALL" data-price="Rs. 1000">
+                <div class="card-gradient bg-gradient-to-b from-teal-500/20 to-transparent"></div>
+                <div class="card-content">
+                    <div class="flex justify-between items-start">
+                        <span class="badge text-teal-200 border border-teal-500/30">Voice</span>
+                        <div class="text-2xl text-teal-400"><i class="fas fa-phone-alt"></i></div>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4">My M5 Call</h3>
+                    <p class="text-gray-400 text-sm mt-1">5000 Off-Net Minutes</p>
+                    <div class="mt-4 flex items-end gap-2">
+                        <span class="price-display">Rs. 1000</span>
+                        <span class="text-sm text-gray-500 mb-2">/ 30 Days</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+                        <button class="btn-details" onclick="viewDetails('m5call')">Details</button>
+                        <button class="btn-activate" onclick="showConfirmation('95005982', this)">Activate</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="unifiedModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="p-5 border-b border-zinc-800 flex justify-between items-center bg-white/5">
+                <h3 id="modalTitle" class="text-lg font-bold text-white">Details</h3>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-zinc-800 text-gray-400 hover:text-white flex items-center justify-center text-xl">&times;</button>
+            </div>
+            <div class="modal-body p-6 text-gray-300 text-sm leading-relaxed space-y-3 max-h-[60vh] overflow-y-auto custom-scrollbar">
+            </div>
+            <div class="modal-footer p-5 border-t border-zinc-800 flex gap-3">
+                </div>
+        </div>
+    </div>
+
+    <div id="resultToast" class="toast">
+        <div id="toastIcon" class="text-2xl"></div>
+        <div class="flex-1">
+            <h4 class="text-white font-bold text-sm" id="toastTitle">Success</h4>
+            <p class="text-gray-400 text-xs mt-1 leading-tight" id="toastMsg">Operation completed</p>
+        </div>
+                            </div>
+    <script>
+// --- 1. CONFIGURATION ---
+const API_BASE = 'https://zong-claim.onrender.com'; 
+
+const msisdn = localStorage.getItem('msisdn');
+const token = localStorage.getItem('token');
+let loginRequestBody = {};
+
+try {
+    const stored = localStorage.getItem('loginRequestBody');
+    if(stored) loginRequestBody = JSON.parse(stored);
+} catch(e) { console.error("Session Error"); }
+
+// --- DATA DEFINITIONS ---
+const REGIONAL_LIST = [ "Malakand", "Kashmore", "Wazirabad", "Shakar Garh", "Kasur", "Nankana", "Gujranwala", "Gujrat", "Mandi Bahudin", "Hafizabad", "Narowal", "Phalia", "Bannu", "Kohat", "FATA", "Karak", "Tando Adam", "Chawinda", "Sambrial", "Daska", "Kassowal", "Kotla", "Burewala", "Taunsa", "Rajanpur", "Jahanian", "Hangu", "Landi Kotal", "Mehar", "Liyari", "Sakrand", "Mastung", "Defence", "Muridke", "Sheikhpura", "Sahiwal", "Okara", "Pirmahal", "Kamalia", "Chichawatni", "Mian Channu", "Kharian", "Pasrur", "Dera Murad Jamali", "Sibi", "Dera Allah Yar", "Kandhkot", "Shahdadkot", "Rato Dero", "Qambar", "Sehwan", "Layyah", "Badin", "Ghotki", "Khairpur", "Kotri", "Mehrabpur", "Moro", "Pano Aqil", "Ranipur", "Tando Allahyar", "Thatta", "Umerkot", "Daharki", "D.I. Khan", "Dina", "Jehlum", "Kallar Kahar", "Sarai Alamgir", "Talagang", "Tank", "Thul", "Shikarpur", "Sanghar", "Usta Muhammad", "Shorkot", "Sargodha", "Ahmedpur Sial", "Rahim Yar Khan", "Bahawalpur", "Vehari", "Panjnad", "Faisalabad", "Multan", "Lodhran", "Sadiqabad", "Hasilpur", "Gojra", "Samundri", "Pindi Bhattian", "Jaranwala", "Bhalwal", "Muzaffargarh", "Esa Khel", "Bhakkar", "Khanewal", "Renala Khurd", "Fort Abbas", "Arifwala", "Farooqabad", "Chiniot", "Jhang", "Kot Addu", "Khushab", "Mianwali", "Piplan", "Zafarwal", "Lahore", "Malakwal", "Bahawalnagar", "Bhai Pheru", "Chishtian", "Depalpur", "Kamoke", "Pakpattan", "Pattoki", "Haroonabad", "NawabShah", "Rohri", "Larkana", "Hub", "Malir" ];
+const UNI_LIST = [ "UET Peshawar Campus", "ARID Agriculture University", "Rawalpindi Medical University", "UMT Lahore", "NCBA & E Lahore", "UET Gujranwala Campus", "Punjab University", "Women University Multan", "Islamia University Bahawalpur", "Baqai Medical University, Karachi", "Salim Habib University Karachi", "Mehran University Jamshoro", "Federal Urdu University Karachi", "Balochistan University", "UET Lahore", "University of Faisalabad", "National Textile University" ];
+
+const DETAILS = {
+    tiktok: { title: "TikTok Mega", price: "Rs. 9", desc: "100 GB for TikTok", sub: "11 PM - 11 AM", valid: "7 Days", list: null },
+    daily: { title: "Daily Combo", price: "Rs. 50", desc: "2GB Data + 1000 SMS", sub: "1000 On-Net Mins", valid: "1 Day", list: null },
+    student: { title: "Student Bundle", price: "Rs. 250", desc: "25 GB + 4000 SMS/Mins", sub: "Selected Universities", valid: "7 Days", list: UNI_LIST },
+    supreme: { title: "Apna Sher Supreme", price: "Rs. 380", desc: "20 GB + 4000 Zong Mins", sub: "Regional Offer", valid: "7 Days", list: REGIONAL_LIST },
+    extreme: { title: "Apna Sher Extreme", price: "Rs. 400", desc: "25 GB + 180 Off-Net", sub: "Regional Offer", valid: "7 Days", list: REGIONAL_LIST },
+    social: { title: "Monthly Social", price: "Rs. 500", desc: "20 GB Social Data", sub: "FB, WA, YT, IMO", valid: "30 Days", list: null },
+    m5call: { title: "My M5 Call", price: "Rs. 1000", desc: "5000 Off-Net Mins", sub: "Voice Only", valid: "30 Days", list: null }
+};
+
+// --- UI VARIABLES ---
+let activePromo = null;
+let modalBtn = null; 
+
+function showToast(title, msg, type) {
+    const toast = document.getElementById('resultToast');
+    const icon = document.getElementById('toastIcon');
+    document.getElementById('toastTitle').innerText = title;
+    document.getElementById('toastMsg').innerText = msg;
+    
+    if(type === 'success') {
+        icon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+        toast.style.borderColor = '#22c55e';
+    } else {
+        icon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
+        toast.style.borderColor = '#ef4444';
+    }
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+function closeModal() { document.getElementById('unifiedModal').classList.remove('active'); }
+
+function viewDetails(key) {
+    const d = DETAILS[key];
+    document.getElementById('modalTitle').innerText = d.title;
+    let content = `
+        <div class="bg-zinc-800/50 p-4 rounded-xl border border-zinc-700 mb-4">
+            <div class="flex justify-between mb-2"><span class="text-gray-400">Price</span><span class="font-bold text-white">${d.price}</span></div>
+            <div class="flex justify-between mb-2"><span class="text-gray-400">Validity</span><span class="font-bold text-green-400">${d.valid}</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Incentive</span><span class="font-bold text-white text-right">${d.desc}</span></div>
+        </div>
+        <p class="text-gray-400 mb-2"><i class="fas fa-info-circle mr-2"></i>${d.sub}</p>
+    `;
+    if(d.list) {
+        content += `<div class="mt-4"><p class="text-xs uppercase font-bold text-gray-500 mb-2">Eligible Areas:</p>
+        <div class="bg-black/30 p-3 rounded-lg h-32 overflow-y-auto text-xs text-gray-400 border border-zinc-800">${d.list.join(', ')}</div></div>`;
+    }
+    document.querySelector('.modal-body').innerHTML = content;
+    document.querySelector('.modal-footer').innerHTML = `<button onclick="closeModal()" class="w-full py-3 rounded-xl bg-zinc-800 text-white font-bold hover:bg-zinc-700">Close</button>`;
+    document.getElementById('unifiedModal').classList.add('active');
+}
+
+function showConfirmation(promoId, btnElement) {
+    if(!token) return showToast("Error", "Please login first", "error");
+    activePromo = promoId;
+    const card = btnElement.closest('.bundle-card');
+    
+    document.getElementById('modalTitle').innerText = "Confirm Purchase";
+    document.querySelector('.modal-body').innerHTML = `
+        <div class="text-center py-6">
+            <div class="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center text-3xl text-green-500 mx-auto mb-4"><i class="fas fa-fingerprint"></i></div>
+            <h3 class="text-xl font-bold text-white mb-1">${card.dataset.name}</h3>
+            <p class="text-gray-400 mb-4">Price: <span class="text-white font-bold">${card.dataset.price}</span></p>
+            <p class="text-xs text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">Warning: Amount will be deducted immediately.</p>
+        </div>`;
+    
+    document.querySelector('.modal-footer').innerHTML = `
+        <button onclick="closeModal()" class="flex-1 py-3 rounded-xl bg-zinc-800 text-gray-300 font-bold hover:bg-zinc-700">Cancel</button>
+        <button id="confirmBtn" onclick="activateBundleLoop()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-black font-bold hover:brightness-110">Confirm & Pay</button>`;
+    
+    document.getElementById('unifiedModal').classList.add('active');
+}
+
+// --- 2. API LOGIC (UPDATED to send FULL userData) ---
+async function activateBundleLoop() {
+    modalBtn = document.getElementById('confirmBtn');
+    if(!modalBtn) return;
+
+    const originalText = modalBtn.innerText;
+    modalBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+    modalBtn.disabled = true;
+
+    // 1. PREPARE USER DATA
+    // Clean phone number (Remove leading 0)
+    const cleanMsisdn = msisdn.startsWith('0') ? msisdn.substring(1) : msisdn;
+    
+    // Merge Full Storage with Clean MSISDN
+    // This ensures appVersion, platform, etc from loginRequestBody are sent!
+    const fullUserData = { 
+        ...loginRequestBody, 
+        msisdn: cleanMsisdn 
+    };
+
+    // 2. CREATE PAYLOAD
+    const payload = { 
+        promotionId: activePromo,
+        userData: fullUserData
+    };
+
+    let success = false;
+    let finalMessage = "";
+    let isWin = false;
+    let attempts = 0;
+
+    // 3. RETRY LOOP
+    while (!success) {
+        attempts++;
+        console.log(`Attempt ${attempts}: Activating...`);
+        
+        try {
+            const res = await fetch(`${API_BASE}/bundle/activate`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'MZA-TOKEN': '92' + cleanMsisdn + '$' + token 
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await res.json();
+            console.log("Response:", data);
+
+            // Check for definitive response
+            if (data.Result === true || data.Result === false) {
+                success = true;
+                isWin = data.Result === true;
+                
+                if (data.MessageBody) finalMessage = data.MessageBody;
+                else if (data.NativeErrorResponse?.Message) finalMessage = data.NativeErrorResponse.Message;
+                else finalMessage = isWin ? "Activation Successful" : "Activation Failed";
+            } else {
+                await new Promise(r => setTimeout(r, 2000));
+            }
+
+        } catch (e) {
+            console.error("Fetch Error:", e);
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+
+    // 4. FINISH
+    closeModal();
+    showToast(isWin ? "Success!" : "Failed", finalMessage, isWin ? 'success' : 'error');
+}
+</script>
+</body>
+</html>
