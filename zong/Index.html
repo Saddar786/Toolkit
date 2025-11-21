@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zong 4G | Secure Login</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔐</text></svg>">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --bg-dark: #020617;
+        --glass-surface: rgba(15, 23, 42, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --neon-green: #84cc16;
+        --neon-cyan: #06b6d4;
+        --whatsapp-green: #22c55e;
+    }
+
+    body {
+        background-color: var(--bg-dark);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(132, 204, 22, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+        font-family: 'Outfit', sans-serif;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow: hidden;
+    }
+
+    /* --- Main Card --- */
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        background: var(--glass-surface);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 32px;
+        padding: 32px 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp 0.6s ease-out;
+    }
+
+    /* Decorative Glow */
+    .login-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--neon-green), var(--neon-cyan), transparent);
+    }
+
+    /* --- Brand --- */
+    .brand-area { text-align: center; margin-bottom: 30px; }
+    .brand-icon {
+        width: 60px; height: 60px; margin: 0 auto 15px auto;
+        background: linear-gradient(135deg, var(--neon-green), #10b981);
+        border-radius: 18px; display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem; color: black; box-shadow: 0 10px 20px -5px rgba(132, 204, 22, 0.4);
+    }
+    .brand-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+    .brand-sub { font-size: 0.85rem; color: #94a3b8; }
+
+    /* --- Inputs --- */
+    .input-field {
+        width: 100%; padding: 16px 16px 16px 50px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px; color: white; font-size: 1rem;
+        transition: 0.3s; outline: none;
+    }
+    .input-field:focus {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: var(--neon-green);
+        box-shadow: 0 0 0 4px rgba(132, 204, 22, 0.1);
+    }
+    .input-wrapper { position: relative; margin-bottom: 20px; }
+    .input-icon {
+        position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+        color: #64748b; font-size: 1.2rem; transition: 0.3s;
+    }
+    .input-field:focus + .input-icon { color: var(--neon-green); }
+
+    /* OTP Input Style */
+    #otpInput { letter-spacing: 8px; text-align: center; padding-left: 16px; font-weight: 700; }
+
+    /* --- Buttons --- */
+    .btn-primary {
+        width: 100%; padding: 16px; border-radius: 16px;
+        background: linear-gradient(135deg, var(--neon-green) 0%, #10b981 100%);
+        color: black; font-weight: 700; font-size: 1rem;
+        border: none; cursor: pointer; transition: 0.3s;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        box-shadow: 0 10px 20px -5px rgba(132, 204, 22, 0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -5px rgba(132, 204, 22, 0.5); }
+    .btn-primary:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-text {
+        background: none; border: none; color: var(--neon-cyan);
+        font-weight: 600; font-size: 0.9rem; cursor: pointer;
+        margin-top: 15px; transition: 0.2s;
+    }
+    .btn-text:disabled { color: #64748b; cursor: default; }
+
+    /* --- Channel Card --- */
+    .channel-card {
+        margin-top: 20px; width: 100%; max-width: 400px;
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 20px; padding: 14px 20px;
+        display: flex; align-items: center; gap: 15px;
+        text-decoration: none; transition: 0.3s;
+        animation: fadeUp 0.8s ease-out;
+    }
+    .channel-card:hover { transform: translateY(-3px); border-color: var(--whatsapp-green); background: rgba(34, 197, 94, 0.15); }
+    .wa-icon {
+        width: 40px; height: 40px; border-radius: 12px;
+        background: var(--whatsapp-green); color: white;
+        display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+    }
+
+    /* --- Long Popup (Snackbar) --- */
+    .snackbar {
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-200%);
+        width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.6); padding: 14px 20px;
+        border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 12px;
+        z-index: 100; opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .snackbar.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .sb-icon { font-size: 1.1rem; }
+    .sb-text { font-size: 0.9rem; font-weight: 500; color: white; }
+    .sb-success { color: var(--neon-green); } .sb-error { color: #ef4444; }
+
+    /* Animations */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .hidden { display: none; }
+    
+    /* Captcha */
+    .captcha-box { display: flex; justify-content: center; margin-bottom: 20px; transform: scale(0.92); transform-origin: center; }
+</style>
+</head>
+<body>
+
+    <div id="globalSnackbar" class="snackbar">
+        <i id="sbIcon" class="fas fa-circle-info sb-icon"></i>
+        <span id="sbMsg" class="sb-text">Notification</span>
+    </div>
+
+    <div class="login-card">
+        
+        <div class="brand-area">
+            <div class="brand-icon"><i class="fas fa-bolt"></i></div>
+            <h1 class="brand-title">ZONG 4G</h1>
+            <p class="brand-sub">Digital Services Portal</p>
+        </div>
+
+        <div id="step-phone">
+            <div class="input-wrapper">
+                <input type="tel" id="msisdnInput" class="input-field" placeholder="03XXXXXXXXX" maxlength="11">
+                <i class="fas fa-mobile-alt input-icon"></i>
+            </div>
+
+            <div class="captcha-box">
+                <div class="h-captcha" data-sitekey="555a33fe-8c9a-4d26-92b4-8358cb1c279c" data-theme="dark"></div>
+            </div>
+
+            <button id="sendOtpBtn" class="btn-primary">
+                <span>Get Verification Code</span>
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+
+        <div id="step-otp-verify" class="hidden">
+            <div class="text-center mb-6">
+                <p class="text-sm text-gray-400">Enter the 6-digit code sent to</p>
+                <p class="text-white font-bold tracking-wider" id="displayPhone">...</p>
+            </div>
+
+            <div class="input-wrapper">
+                <input type="tel" id="otpInput" class="input-field" placeholder="• • • • • •" maxlength="6">
+                <i class="fas fa-key input-icon"></i>
+            </div>
+
+            <button id="verifyOtpBtn" class="btn-primary">
+                <span>Verify & Login</span>
+                <i class="fas fa-lock-open"></i>
+            </button>
+
+            <div class="text-center">
+                <button id="resendOtpBtn" class="btn-text" disabled>Resend Code in 60s</button>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank" class="channel-card">
+        <div class="wa-icon"><i class="fab fa-whatsapp"></i></div>
+        <div class="flex-1">
+            <h3 class="text-white font-bold text-sm">Join WhatsApp Channel</h3>
+            <p class="text-gray-400 text-xs">Get updates & free codes</p>
+        </div>
+        <i class="fas fa-chevron-right text-gray-500"></i>
+    </a>
+
+<script>
+/* =================================================
+   LOGIC PRESERVED - UI & POPUP UPDATED
+   =================================================
+*/
+const API_BASE = ''; 
+let sending = false;
+let verifying = false;
+let timerInterval;
+
+const USER_ID_KEY = 'currentUserId';
+const TIMER_KEY = 'otpExpiryTime';
+const DURATION_SECONDS = 80; 
+
+// Elements
+const phoneInput = document.getElementById('msisdnInput');
+const otpInput = document.getElementById('otpInput');
+const sendOtpBtn = document.getElementById('sendOtpBtn');
+const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+const resendOtpBtn = document.getElementById('resendOtpBtn');
+const stepPhone = document.getElementById('step-phone');
+const stepOtpVerify = document.getElementById('step-otp-verify');
+const displayPhone = document.getElementById('displayPhone');
+
+// --- NEW POPUP SYSTEM ---
+function showStatus(msg, type) {
+    const sb = document.getElementById('globalSnackbar');
+    const icon = document.getElementById('sbIcon');
+    const text = document.getElementById('sbMsg');
+
+    text.innerText = msg;
+    
+    if(type === 'success') {
+        icon.className = 'fas fa-check-circle sb-icon sb-success';
+        sb.style.borderColor = 'var(--neon-green)';
+    } else if (type === 'error') {
+        icon.className = 'fas fa-times-circle sb-icon sb-error';
+        sb.style.borderColor = '#ef4444';
+    } else {
+        icon.className = 'fas fa-info-circle sb-icon text-blue-400';
+        sb.style.borderColor = '#3b82f6';
+    }
+
+    sb.classList.add('show');
+    setTimeout(() => sb.classList.remove('show'), 3500);
+}
+
+function updateButtons(isSending, isVerifying) {
+    if(isSending) {
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending...';
+    } else {
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.innerHTML = '<span>Get Verification Code</span><i class="fas fa-paper-plane"></i>';
+    }
+
+    if(isVerifying) {
+        verifyOtpBtn.disabled = true;
+        verifyOtpBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
+    } else {
+        verifyOtpBtn.disabled = false;
+        verifyOtpBtn.innerHTML = '<span>Verify & Login</span><i class="fas fa-lock-open"></i>';
+    }
+}
+
+// --- TIMER LOGIC ---
+function startTimer() {
+    let expiryTime = parseInt(localStorage.getItem(TIMER_KEY));
+    const currentTime = Date.now();
+    
+    resendOtpBtn.disabled = true;
+    resendOtpBtn.style.color = '#64748b';
+
+    if (isNaN(expiryTime) || expiryTime < currentTime) {
+        expiryTime = currentTime + DURATION_SECONDS * 1000;
+        localStorage.setItem(TIMER_KEY, expiryTime);
+    }
+    
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        const now = Date.now();
+        const remaining = Math.max(0, expiryTime - now);
+        const seconds = Math.ceil(remaining / 1000);
+
+        if (seconds <= 0) {
+            clearInterval(timerInterval);
+            resendOtpBtn.textContent = "Resend Code";
+            localStorage.removeItem(TIMER_KEY);
+            resendOtpBtn.disabled = false;
+            resendOtpBtn.style.color = 'var(--neon-cyan)';
+        } else {
+            resendOtpBtn.textContent = `Resend in ${seconds}s`;
+        }
+    }, 1000);
+}
+
+function checkOtpStepOnLoad() {
+    const expiryTime = parseInt(localStorage.getItem(TIMER_KEY));
+    const currentTime = Date.now();
+    const isMsisdnPresent = localStorage.getItem('msisdn');
+    const isUserIdPresent = localStorage.getItem(USER_ID_KEY);
+    
+    if (isMsisdnPresent && isUserIdPresent && expiryTime > currentTime) {
+        stepPhone.classList.add('hidden');
+        stepOtpVerify.classList.remove('hidden');
+        displayPhone.innerText = isMsisdnPresent;
+        showStatus("Enter OTP sent to your mobile", "info");
+        startTimer();
+        return true;
+    }
+    return false;
+}
+
+// --- API LOGIC ---
+async function sendOtp(input) {
+    if(sending) return;
+    const phone = input.trim().replace(/[^0-9]/g,'');
+    
+    if(!phone.match(/^03\d{9}$/)) return showStatus("Invalid Zong Number", "error");
+
+    const token = hcaptcha.getResponse();
+    if (!token) return showStatus("Please complete security check", "error");
+
+    sending = true;
+    updateButtons(true, false);
+    const apiMsisdn = phone.substring(1); 
+    showStatus("Contacting Server...", "info");
+
+    localStorage.removeItem(TIMER_KEY);
+    const requestUserId = crypto.randomUUID(); 
+    
+    while(sending) {
+        try {
+            const payload = {
+                msisdn: apiMsisdn, userId: requestUserId, 
+                'h-captcha-response': token, 
+                appVersion: "5.19.19.85", appVersionCode: "105", 
+                VersionCode: "105", platform: "A", osVersion: "30", language: "en"
+            };
+
+            const res = await fetch(`${API_BASE}/register`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.Result === true || data.Result === false || res.status === 403) {
+                if(res.status === 403) {
+                    hcaptcha.reset();
+                    showStatus("Captcha expired. Solve again.", "error");
+                    sending = false;
+                    break;
+                }
+
+                const isSuccess = data.Result === true;
+                if (isSuccess) {
+                    if (data.userId) {
+                        localStorage.setItem(USER_ID_KEY, data.userId);
+                        localStorage.setItem('msisdn', phone); 
+                    }
+                    stepPhone.classList.add('hidden');
+                    stepOtpVerify.classList.remove('hidden');
+                    displayPhone.innerText = phone;
+                    startTimer();
+                }
+                
+                showStatus(data.MessageBody || (isSuccess ? "Code Sent" : "Failed"), isSuccess ? "success" : "error");
+                hcaptcha.reset();
+                sending = false;
+                break;
+            } else {
+                showStatus("Retrying...", "info");
+                await new Promise(r => setTimeout(r, 2500));
+            }
+        } catch(e) {
+            showStatus("Network error, retrying...", "error");
+            await new Promise(r => setTimeout(r, 2500));
+        }
+    }
+    updateButtons(false, false);
+}
+
+async function verifyOtp() {
+    if(verifying) return;
+    const pin = otpInput.value.trim();
+    const msisdn = localStorage.getItem('msisdn');
+    
+    if(pin.length !== 6) return showStatus("Enter 6-digit OTP", "error");
+
+    const verificationUserId = localStorage.getItem(USER_ID_KEY);
+    if (!verificationUserId) return showStatus("Session expired. Resend.", "error");
+
+    verifying = true;
+    updateButtons(false, true);
+    const apiMsisdn = msisdn.substring(1);
+    showStatus("Verifying...", "info");
+
+    while(verifying) {
+        const expiryTime = parseInt(localStorage.getItem(TIMER_KEY));
+        if (isNaN(expiryTime) || expiryTime <= Date.now()) {
+            showStatus("OTP Expired. Request new.", "error");
+            stepOtpVerify.classList.add('hidden');
+            stepPhone.classList.remove('hidden');
+            verifying = false;
+            clearInterval(timerInterval);
+            break;
+        }
+
+        try {
+            const payload = {
+                msisdn: apiMsisdn, isFlaged: false, isLoggedIn: true, pin,
+                userId: verificationUserId, appVersion: "5.19.19.85", appVersionCode: "105",
+                VersionCode: "105", platform: "A", osVersion: "30", language: "en"
+            };
+
+            const res = await fetch(`${API_BASE}/login`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.Result === true || data.Result === false) {
+                const isSuccess = data.Result === true;
+                if (isSuccess) {
+                    localStorage.setItem('loginRequestBody', JSON.stringify(payload));
+                    if (data.Token) localStorage.setItem('token', data.Token);
+                    localStorage.setItem('msisdn', msisdn);
+                    clearInterval(timerInterval);
+                }
+
+                showStatus(data.MessageBody || (isSuccess ? "Login Successful!" : "Incorrect OTP"), isSuccess ? "success" : "error");
+                verifying = false;
+
+                if (isSuccess) {
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+                }
+                break;
+            } else {
+                showStatus("Retrying...", "info");
+                await new Promise(r => setTimeout(r, 2000));
+            }
+        } catch(e) {
+            showStatus("Network error, retrying...", "error");
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+    updateButtons(false, false);
+}
+
+// Events
+window.addEventListener('load', () => {
+    const token = localStorage.getItem('token');
+    if(token) {
+        showStatus('Redirecting to Dashboard...', 'success');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+    } else {
+        if (!checkOtpStepOnLoad()) {
+            const storedMsisdn = localStorage.getItem('msisdn');
+            if(storedMsisdn) phoneInput.value = storedMsisdn;
+        }
+    }
+});
+
+sendOtpBtn.addEventListener('click', () => sendOtp(phoneInput.value));
+verifyOtpBtn.addEventListener('click', verifyOtp);
+
+resendOtpBtn.addEventListener('click', () => {
+    const phone = localStorage.getItem('msisdn') || phoneInput.value.trim();
+    hcaptcha.reset();
+    if(phone) sendOtp(phone);
+    else {
+        stepOtpVerify.classList.add('hidden');
+        stepPhone.classList.remove('hidden');
+    }
+});
+
+phoneInput.addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g,''); });
+otpInput.addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g,''); });
+
+</script>
+</body>
+</html>
