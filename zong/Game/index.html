@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zong | Quantum Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --bg-deep: #000000;
+        --glass-surface: rgba(20, 20, 25, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --neon-cyan: #00f3ff;
+        --neon-pink: #ff0055;
+        --neon-green: #00ff9d;
+        --neon-yellow: #facc15;
+    }
+
+    body {
+        background-color: var(--bg-deep);
+        background-image: 
+            linear-gradient(0deg, transparent 24%, rgba(0, 243, 255, .03) 25%, rgba(0, 243, 255, .03) 26%, transparent 27%, transparent 74%, rgba(0, 243, 255, .03) 75%, rgba(0, 243, 255, .03) 76%, transparent 77%, transparent),
+            linear-gradient(90deg, transparent 24%, rgba(0, 243, 255, .03) 25%, rgba(0, 243, 255, .03) 26%, transparent 27%, transparent 74%, rgba(0, 243, 255, .03) 75%, rgba(0, 243, 255, .03) 76%, transparent 77%, transparent);
+        background-size: 50px 50px;
+        font-family: 'Inter', sans-serif;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 1rem;
+        overflow-x: hidden;
+    }
+
+    .console-card {
+        width: 100%; max-width: 420px; background: var(--glass-surface);
+        backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border); border-radius: 30px;
+        box-shadow: 0 0 40px rgba(0, 243, 255, 0.05);
+        position: relative; overflow: hidden; display: flex; flex-direction: column;
+    }
+
+    .glow-spot { position: absolute; width: 150px; height: 150px; background: var(--neon-cyan); filter: blur(80px); opacity: 0.15; top: -50px; left: -50px; z-index: 0; }
+    .glow-spot-2 { position: absolute; width: 150px; height: 150px; background: var(--neon-pink); filter: blur(80px); opacity: 0.1; bottom: -50px; right: -50px; z-index: 0; }
+
+    .header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); position: relative; z-index: 10; }
+    .brand-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.5rem; letter-spacing: 1px; }
+    .brand-sub { font-size: 0.7rem; color: #94a3b8; letter-spacing: 2px; text-transform: uppercase; }
+
+    .pkt-display { font-family: 'Rajdhani', sans-serif; font-weight: 600; text-align: center; margin-top: 10px; font-size: 1rem; color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0, 243, 255, 0.4); }
+
+    .data-ring-container { position: relative; width: 160px; height: 160px; margin: 20px auto; z-index: 10; }
+    .data-ring { width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(255,255,255,0.05); position: relative; }
+    .data-ring::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--neon-cyan); border-right-color: var(--neon-pink); animation: spin 3s linear infinite; }
+    .data-value { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .data-big { font-family: 'Rajdhani', sans-serif; font-size: 3rem; font-weight: 700; line-height: 1; }
+    .data-label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; margin-top: 5px; }
+
+    .config-card { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; margin: 0 15px 15px 15px; position: relative; z-index: 10; }
+    .config-title { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 10px; display: flex; justify-content: space-between; }
+    
+    .stepper { display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; width: fit-content;}
+    .stepper-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: transparent; cursor: pointer; transition: 0.2s; color: var(--neon-cyan); }
+    .stepper-btn:hover { background: rgba(255,255,255,0.1); }
+    .stepper-val { width: 40px; text-align: center; font-weight: 700; font-family: 'Rajdhani'; font-size: 1.2rem; }
+
+    .time-input { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; font-family: 'Rajdhani'; font-size: 1.5rem; text-align: center; border-radius: 10px; width: 100%; padding: 5px; outline: none; }
+
+    .cyber-btn { background: linear-gradient(90deg, var(--neon-cyan), #0066ff); color: #000; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; width: calc(100% - 30px); margin: 0 15px 15px 15px; padding: 15px; border: none; border-radius: 12px; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); cursor: pointer; transition: all 0.3s ease; position: relative; z-index: 10; }
+    .cyber-btn:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
+    .cyber-btn:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
+    .cyber-btn.active-auto { background: var(--neon-green); color: #000; animation: pulse-green 2s infinite; }
+
+    .win-popup { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 80%; background: rgba(0, 0, 0, 0.9); border: 2px solid var(--neon-green); border-radius: 20px; padding: 2rem; text-align: center; z-index: 100; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 50px rgba(0, 255, 157, 0.2); }
+    .win-popup.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .win-title { color: var(--neon-green); font-family: 'Rajdhani'; font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase;}
+    .win-amount { font-size: 3rem; font-weight: 800; color: white; font-family: 'Rajdhani'; }
+    .win-sub { color: #94a3b8; font-size: 0.8rem; }
+
+    .history-ticker { margin: 0 15px; max-height: 100px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px; position: relative; z-index: 10; }
+    .tick-item { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2px;}
+    .tick-round { color: var(--neon-cyan); font-weight: 700; }
+    .tick-mb { color: white; }
+
+    .wa-link { text-align: center; display: block; margin: 10px 0 20px 0; color: var(--neon-green); font-size: 0.8rem; text-decoration: none; opacity: 0.8; transition: 0.3s; position: relative; z-index: 10; font-weight: 600; }
+    .wa-link:hover { opacity: 1; text-shadow: 0 0 10px rgba(0, 255, 157, 0.5); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 255, 157, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0); } }
+    
+    .loader-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 50; display: none; justify-content: center; align-items: center; flex-direction: column; }
+    .loader-bar { width: 200px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; margin-top: 15px;}
+    .loader-progress { height: 100%; background: var(--neon-cyan); width: 30%; animation: load 1s infinite ease-in-out; }
+    @keyframes load { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    
+    /* Auto Status */
+    .auto-badge { position: absolute; top: 15px; left: 15px; background: var(--neon-yellow); color: black; font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; z-index: 20; display: none; }
+</style>
+</head>
+<body>
+
+<div class="console-card">
+    <div class="auto-badge" id="autoBadge">AUTO ACTIVE</div>
+    <div class="glow-spot"></div>
+    <div class="glow-spot-2"></div>
+
+    <div class="header">
+        <div>
+            <div class="brand-title">ZONG<span style="color:var(--neon-cyan)">//</span>HUB</div>
+            <div class="brand-sub">QUANTUM REWARDS</div>
+        </div>
+        <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center">
+            <i class="fas fa-signal text-xs text-green-400"></i>
+        </div>
+    </div>
+
+    <div class="pkt-display">PKT: <span id="liveClock">--:--:--</span></div>
+
+    <div class="data-ring-container">
+        <div class="data-ring"></div>
+        <div class="data-value">
+            <div class="data-big" id="totalMbWon">0</div>
+            <div class="data-label">MB TODAY</div>
+        </div>
+    </div>
+
+    <div class="config-card">
+        <div class="config-title">
+            <span><i class="fas fa-robot"></i> Auto-Scheduler (24/7)</span>
+            <span id="nextCost" class="text-xs text-white">Next: --</span>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mb-3">
+            <div>
+                <div class="text-[10px] text-gray-400 mb-1 uppercase">Auto-Play At (PKT)</div>
+                <input type="time" id="targetTime" class="time-input" step="1" value="00:00:01">
+            </div>
+            <div>
+                <div class="text-[10px] text-gray-400 mb-1 uppercase">Games to Play</div>
+                <div class="stepper">
+                    <button class="stepper-btn" onclick="adjustGames(-1)"><i class="fas fa-minus"></i></button>
+                    <div class="stepper-val" id="gamesCount">5</div>
+                    <button class="stepper-btn" onclick="adjustGames(1)"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="countdownDisplay" class="text-center text-yellow-400 font-mono text-sm hidden border-t border-white/10 pt-2 mt-2">
+            Next Run: 00:00:00
+        </div>
+    </div>
+
+    <div class="history-ticker custom-scrollbar" id="historyContainer">
+        <div class="text-center text-xs text-gray-500">Syncing system...</div>
+    </div>
+
+    <button id="mainBtn" class="cyber-btn" onclick="toggleScheduler()">
+        ACTIVATE AUTO-PILOT
+    </button>
+
+    <a href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank" class="wa-link">
+        <i class="fab fa-whatsapp"></i> JOIN OFFICIAL CHANNEL
+    </a>
+
+    <div id="winPopup" class="win-popup">
+        <div class="win-title">SUCCESS!</div>
+        <div class="win-amount" id="popupMb">+0 MB</div>
+        <div class="win-sub" id="popupRound">Round Complete</div>
+    </div>
+
+    <div id="fullLoader" class="loader-overlay">
+        <div class="text-sm font-bold tracking-widest text-white uppercase" id="loaderText">PROCESSING</div>
+        <div class="loader-bar"><div class="loader-progress"></div></div>
+    </div>
+
+        </div>
+        <script>
+// --- CONFIGURATION ---
+const API_BASE = 'https://zong-claim.onrender.com'; 
+const ENDPOINT_PLAY = '/rewards/playrewardgame'; 
+const ENDPOINT_CLAIM = '/claim';                 
+
+const GAME_PRICES = { 1: "Free", 2: "Rs. 2", 3: "Rs. 3", 4: "Rs. 4", 5: "Rs. 5" };
+
+// --- STATE ---
+let gameState = { history: [], activeGameNo: 1, totalMb: 0 };
+let schedulerSettings = { isRunning: false, lastTriggerDay: null };
+let initialLoadDone = false;
+
+// --- INIT ---
+document.addEventListener('DOMContentLoaded', () => {
+    fetchInitialData();
+    restoreSchedulerState(); 
+    startClock();
+});
+
+// --- 1. PERSISTENCE LOGIC ---
+function restoreSchedulerState() {
+    const savedRun = localStorage.getItem('auto_running');
+    const savedTime = localStorage.getItem('auto_target');
+    const savedCount = localStorage.getItem('auto_count');
+
+    if (savedTime) document.getElementById('targetTime').value = savedTime;
+    if (savedCount) document.getElementById('gamesCount').innerText = savedCount;
+
+    if (savedRun === 'true') {
+        // Force Start without checking state
+        schedulerSettings.isRunning = true;
+        updateSchedulerUI(true);
+    }
+}
+
+function toggleScheduler() {
+    schedulerSettings.isRunning = !schedulerSettings.isRunning;
+    localStorage.setItem('auto_running', schedulerSettings.isRunning);
+    
+    // Save inputs
+    localStorage.setItem('auto_target', document.getElementById('targetTime').value);
+    localStorage.setItem('auto_count', document.getElementById('gamesCount').innerText);
+
+    updateSchedulerUI(schedulerSettings.isRunning);
+}
+
+function updateSchedulerUI(active) {
+    const btn = document.getElementById('mainBtn');
+    const input = document.getElementById('targetTime');
+    const cd = document.getElementById('countdownDisplay');
+    const badge = document.getElementById('autoBadge');
+
+    if (active) {
+        btn.innerText = "STOP AUTO-PILOT";
+        btn.classList.add('active-auto');
+        input.disabled = true;
+        cd.style.display = 'block';
+        badge.style.display = 'block';
+    } else {
+        btn.innerText = "ACTIVATE AUTO-PILOT";
+        btn.classList.remove('active-auto');
+        input.disabled = false;
+        cd.style.display = 'none';
+        badge.style.display = 'none';
+    }
+}
+
+// --- 2. CLOCK & SCHEDULER ---
+function startClock() {
+    setInterval(() => {
+        const now = getPKTime();
+        document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-US', { hour12: true });
+        if(schedulerSettings.isRunning) checkSchedule(now);
+    }, 1000);
+}
+
+function getPKTime() {
+    return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
+}
+
+function checkSchedule(now) {
+    const targetVal = document.getElementById('targetTime').value;
+    if (!targetVal) return;
+
+    const [h, m, s] = targetVal.split(':').map(Number);
+    const target = getPKTime();
+    target.setHours(h, m, s || 0, 0);
+
+    // Logic: If target < now, it means the time has passed today, so target is tomorrow
+    if (target < now) target.setDate(target.getDate() + 1);
+
+    const diff = target - now;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    document.getElementById('countdownDisplay').innerText = `NEXT RUN: ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+    // TRIGGER LOGIC
+    // We use a 2-second window to catch the time
+    // And we check if we already triggered today to avoid double firing
+    const todayStr = new Date().toDateString();
+    
+    if (diff <= 2000 && diff >= 0 && schedulerSettings.lastTriggerDay !== todayStr) {
+        executeBatch();
+        schedulerSettings.lastTriggerDay = todayStr; // Mark as done for today
+    }
+}
+
+// --- 3. BATCH EXECUTION (Persistent) ---
+async function executeBatch() {
+    showLoader(true, "AUTO-PILOT ENGAGED...");
+    
+    // 1. Sync Data First (in case it's a new day and data reset)
+    await fetchInitialData();
+    
+    const startRound = gameState.activeGameNo;
+    const count = parseInt(document.getElementById('gamesCount').innerText);
+    const maxPossible = 5; 
+    const targetRound = Math.min(startRound + count - 1, maxPossible);
+
+    console.log(`Auto-Pilot: Target ${targetRound}, Current ${startRound}`);
+
+    if(startRound > maxPossible) {
+        // Already done for today? Just wait for tomorrow.
+        showLoader(false);
+        return;
+    }
+
+    for (let i = startRound; i <= targetRound; i++) {
+        document.getElementById('loaderText').innerText = `PLAYING ROUND ${i}...`;
+        const endpoint = (i === 1) ? ENDPOINT_PLAY : ENDPOINT_CLAIM;
+        
+        const success = await playSingleGame(endpoint, i);
+        
+        if (!success) break; // Stop batch on error
+        
+        await new Promise(r => setTimeout(r, 1500));
+    }
+
+    showLoader(false);
+    fetchInitialData(); 
+    // NOTE: We do NOT toggleScheduler() here. It remains active for tomorrow.
+}
+
+async function playSingleGame(endpoint, round) {
+    let attempts = 0;
+    while(attempts < 3) {
+        attempts++;
+        try {
+            const res = await callApi(endpoint);
+            if (res.Result === true || res.Result === false) {
+                if(res.Result === true) {
+                    let mbWon = "Won";
+                    if(res.MessageBody) {
+                        const match = res.MessageBody.match(/(\d+)MB/i) || res.MessageBody.match(/(\d+)\s*MB/i);
+                        if(match) mbWon = match[1];
+                    }
+                    await showWinPopup(round, mbWon);
+                    return true;
+                } else {
+                    return false; 
+                }
+            }
+            await new Promise(r => setTimeout(r, 2000));
+        } catch(e) { await new Promise(r => setTimeout(r, 2000)); }
+    }
+    return false;
+}
+
+// --- 4. DATA & UI ---
+async function fetchInitialData() {
+    if(!initialLoadDone) document.getElementById('historyContainer').innerHTML = '<div class="text-center text-xs text-gray-500">Connecting...</div>';
+    try {
+        const res = await callApi(ENDPOINT_PLAY);
+        if (res && res.ResultContent?.GameData) {
+            parseGameResponse(res);
+            initialLoadDone = true;
+        }
+    } catch (e) { console.error(e); }
+}
+
+function parseGameResponse(data) {
+    const gameData = data.ResultContent.GameData;
+    if (!gameData) return;
+
+    gameState.activeGameNo = parseInt(gameData.ActiveGameNo || 1);
+    gameState.history = gameData.TodayGameHistory || [];
+
+    let total = 0;
+    gameState.history.forEach(h => total += parseInt(h.GameMbs || 0));
+    gameState.totalMb = total;
+
+    renderUI();
+}
+
+function renderUI() {
+    document.getElementById('totalMbWon').innerText = gameState.totalMb;
+    
+    const list = document.getElementById('historyContainer');
+    list.innerHTML = '';
+    
+    if(gameState.history.length === 0) {
+        list.innerHTML = '<div class="text-center text-xs text-gray-500">No History Today</div>';
+    } else {
+        [...gameState.history].reverse().forEach(item => {
+            list.innerHTML += `
+            <div class="tick-item">
+                <span class="tick-round">R${item.GameNo} (${item.GameMode})</span>
+                <span class="tick-mb">+${item.GameMbs} MB</span>
+            </div>`;
+        });
+    }
+
+    // Always keep button enabled if scheduler is running, so user can stop it
+    const next = gameState.activeGameNo;
+    
+    if(next <= 5) {
+        document.getElementById('nextCost').innerText = `Next: ${GAME_PRICES[next]}`;
+    } else {
+        document.getElementById('nextCost').innerText = "Finished";
+        // Only change text if not running. If running, button says "STOP AUTO-PILOT"
+        if(!schedulerSettings.isRunning) {
+            document.getElementById('mainBtn').innerText = "GAMES COMPLETED (SCHEDULE READY)";
+            document.getElementById('mainBtn').disabled = false; // Keep enabled
+        }
+    }
+}
+
+// --- UTILS ---
+function adjustGames(delta) {
+    const el = document.getElementById('gamesCount');
+    let val = parseInt(el.innerText) + delta;
+    if(val < 1) val = 1;
+    if(val > 5) val = 5;
+    el.innerText = val;
+    localStorage.setItem('auto_count', val);
+}
+
+function pad(n) { return n < 10 ? '0' + n : n; }
+
+function showWinPopup(round, mb) {
+    return new Promise(resolve => {
+        const popup = document.getElementById('winPopup');
+        document.getElementById('popupMb').innerText = `+${mb} MB`;
+        document.getElementById('popupRound').innerText = `Round ${round} Complete`;
+        popup.classList.add('visible');
+        setTimeout(() => {
+            popup.classList.remove('visible');
+            resolve();
+        }, 3000);
+    });
+}
+
+function showLoader(s, t="") {
+    const el = document.getElementById('fullLoader');
+    if(s) { el.style.display = 'flex'; document.getElementById('loaderText').innerText = t; } 
+    else { el.style.display = 'none'; }
+}
+
+async function callApi(endpoint) {
+    const msisdn = localStorage.getItem('msisdn');
+    const token = localStorage.getItem('token');
+    const loginBody = JSON.parse(localStorage.getItem('loginRequestBody') || '{}');
+    if(!msisdn || !token) { window.location.href = 'index.html'; return; }
+    const msisdnNoZero = msisdn.startsWith('0') ? msisdn.substring(1) : msisdn;
+
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'MZA-TOKEN': msisdnNoZero + '$' + token },
+        body: JSON.stringify(loginBody)
+    });
+    return await response.json();
+}
+</script>
+</body>
+</html>
