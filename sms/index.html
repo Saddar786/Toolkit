@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Message Panel</title>
+
+<!-- hCaptcha -->
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: #fff;
+        padding: 20px;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #444;
+        background: #222;
+        color: #fff;
+    }
+
+    #submitBtn {
+        width: 100%;
+        padding: 12px;
+        background: #4ade80;
+        border: none;
+        color: #000;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #submitBtn:disabled {
+        background: #555;
+        cursor: not-allowed;
+    }
+
+    #carrierStatus.active {
+        background: #222;
+        padding: 6px 10px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-top: 6px;
+    }
+
+    /* Toast */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 14px 20px;
+        border-radius: 6px;
+        background: #222;
+        color: #fff;
+        display: none;
+    }
+    .toast-container.show {
+        display: block;
+    }
+    .toast-success { border-left: 4px solid #4ade80; }
+    .toast-error { border-left: 4px solid #f87171; }
+</style>
+
+</head>
+<body>
+
+<h2>Secure Message Sender</h2>
+
+<form id="secureForm">
+
+    <div class="input-group">
+        <label>Phone Number</label>
+        <input type="text" id="phone" placeholder="03XX-XXXXXXX" maxlength="13">
+        <div id="carrierStatus" class="">
+            <span id="carrierName"></span>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>Message</label>
+        <textarea id="message" rows="4" placeholder="Type your message..."></textarea>
+        <div>Characters: <span id="charCount">0</span></div>
+    </div>
+
+    <!-- hCaptcha -->
+    <div class="h-captcha" 
+         data-sitekey="555a33fe-8c9a-4d26-92b4-8358cb1c279c"
+         data-theme="dark">
+    </div>
+
+    <br>
+
+    <button type="submit" id="submitBtn" disabled>
+        <span id="btnText">Send Message</span>
+        <span id="btnSpinner" style="display:none;">⏳</span>
+    </button>
+</form>
+
+
+<!-- Toast -->
+<div id="toast" class="toast-container">
+    <span id="toastTitle"></span><br>
+    <span id="toastMessage"></span>
+</div>
+
+
+<script>
+    const phoneEl = document.getElementById('phone');
+    const msgEl = document.getElementById('message');
+    const btn = document.getElementById('submitBtn');
+    const carrierPill = document.getElementById('carrierStatus');
+    const carrierName = document.getElementById('carrierName');
+    const charCount = document.getElementById('charCount');
+
+    const cleanPhone = (v) => v.replace(/\D/g, '').trim();
+
+    const validate = () => {
+        const p = cleanPhone(phoneEl.value);
+        const m = msgEl.value.trim();
+        const valid = p.startsWith('03') && p.length === 11 && m.length > 0;
+        btn.disabled = !valid;
+    };
+
+    // PHONE INPUT FORMATTER + CARRIER CHECK
+    let debounceTimer;
+    phoneEl.addEventListener('input', (e) => {
+        const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+        let formatted = digits;
+        if (digits.length > 4) formatted = digits.slice(0, 4) + '-' + digits.slice(4);
+        e.target.value = formatted;
+
+        const raw = digits;
+
+        if (raw.length === 11 && raw.startsWith('03')) {
+            carrierPill.classList.add('active');
+            carrierName.innerText = "Checking...";
+            carrierName.style.color = "#ccc";
+
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                fetch(`/proxy?number=${encodeURIComponent(raw)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        const item = data?.providerData?.data?.Items?.[0];
+                        if (data.success && item) {
+                            carrierName.innerText = item.Name;
+                            carrierName.style.color = "#4ade80";
+                        } else {
+                            carrierName.innerText = "Unknown";
+                            carrierName.style.color = "#777";
+                        }
+                    })
+                    .catch(() => {
+                        carrierName.innerText = "Network Error";
+                    });
+            }, 500);
+
+        } else {
+            carrierPill.classList.remove('active');
+            carrierName.innerText = "";
+        }
+
+        validate();
+    });
+
+    // MESSAGE COUNTER
+    msgEl.addEventListener('input', (e) => {
+        charCount.innerText = e.target.value.length;
+        validate();
+    });
+
+    // SUBMIT HANDLER
+    document.getElementById('secureForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const token = hcaptcha.getResponse();
+        if (!token) {
+            showToast('error', 'Security Check', 'Complete Captcha.');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const res = await fetch('/api/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone: cleanPhone(phoneEl.value),
+                    message: msgEl.value.trim(),
+                    'h-captcha-response': token
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('success', 'Sent', data.message || 'Message delivered.');
+                phoneEl.value = '';
+                msgEl.value = '';
+                charCount.innerText = '0';
+                carrierPill.classList.remove('active');
+                hcaptcha.reset();
+            } else {
+                showToast('error', 'Failed', data.error || 'Server rejected request.');
+                hcaptcha.reset();
+            }
+
+        } catch {
+            showToast('error', 'Connection Error', 'Check your internet.');
+        }
+
+        setLoading(false);
+        validate();
+    });
+
+    function setLoading(isLoading) {
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        btn.disabled = isLoading;
+
+        btnText.style.display = isLoading ? 'none' : 'inline';
+        btnSpinner.style.display = isLoading ? 'inline' : 'none';
+    }
+
+    function showToast(type, title, msg) {
+        const toast = document.getElementById('toast');
+        const titleEl = document.getElementById('toastTitle');
+        const msgEl = document.getElementById('toastMessage');
+
+        toast.className = 'toast-container show ' + (type === 'success' ? 'toast-success' : 'toast-error');
+        titleEl.innerText = title;
+        msgEl.innerText = msg;
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
