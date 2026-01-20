@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        button {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #006699;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .loading { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📍 Location Tracker</h2>
+        <p>Apna location Telegram pe bhejne ke liye button dabayein</p>
+        
+        <button onclick="getLocation()">📍 Location Bhejo</button>
+        
+        <div id="status" class="status"></div>
+        <div id="map" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        // YEH APNA NAYA TOKEN DALO
+        const botToken = "8445845928:AAHpquB8r6XKx6_haX6zIh-sJHGPGinnV2M";
+        const chatId = "6242168240";
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = message;
+            statusDiv.className = 'status ' + type;
+        }
+
+        function showMap(lat, lon) {
+            const mapDiv = document.getElementById('map');
+            mapDiv.innerHTML = `
+                <h3>📍 Your Location</h3>
+                <p><strong>Latitude:</strong> ${lat}</p>
+                <p><strong>Longitude:</strong> ${lon}</p>
+                <a href="https://maps.google.com/?q=${lat},${lon}" target="_blank">
+                    Google Maps pe dekho
+                </a>
+            `;
+        }
+
+        function sendLocation(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            // Location dikhao
+            showMap(lat, lon);
+
+            // Message banayein
+            const message = `📍 New Location:\n\nLatitude: ${lat}\nLongitude: ${lon}\nAccuracy: ${accuracy} meters\n\nGoogle Maps: https://maps.google.com/?q=${lat},${lon}`;
+
+            showStatus("Telegram pe bhej raha hoon...", "loading");
+
+            // Telegram API call
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    showStatus("✅ Location successfully Telegram pe bhej diya!", "success");
+                } else {
+                    showStatus("❌ Telegram error: " + data.description, "error");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showStatus("❌ Network error. Internet check karo.", "error");
+            });
+        }
+
+        function getLocation() {
+            showStatus("Location access mang raha hoon...", "loading");
+
+            if (!navigator.geolocation) {
+                showStatus("❌ Aapka browser location support nahi karta", "error");
+                return;
+            }
+
+            // Location access mangte hain
+            navigator.geolocation.getCurrentPosition(
+                sendLocation,
+                (error) => {
+                    let errorMessage = "❌ Location access nahi mila";
+                    switch(error.code) {
+                        case 1:
+                            errorMessage = "❌ Permission denied. Settings se allow karo.";
+                            break;
+                        case 2:
+                            errorMessage = "❌ Location unavailable. GPS on karo.";
+                            break;
+                        case 3:
+                            errorMessage = "❌ Timeout. Dobara try karo.";
+                            break;
+                    }
+                    showStatus(errorMessage, "error");
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // Pehle user se permission lo
+        function init() {
+            showStatus("📍 Location tracker ready. Button dabayein.", "");
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
