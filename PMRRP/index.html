@@ -1,1 +1,89 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Full Record Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; padding: 15px; }
+    input { padding: 8px; width: 100%; margin-bottom: 10px; }
+    button { padding: 10px; width: 100%; background: green; color: white; border: none; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid #ccc; padding: 6px; }
+    th { background: #f2f2f2; }
+  </style>
+</head>
+<body>
+
+<h3>CNIC / Mobile Search</h3>
+
+<input type="text" id="searchValue" placeholder="Enter CNIC or Mobile">
+<button onclick="searchData()">Search</button>
+
+<div id="tableContainer"></div>
+
+<script>
+const SUPABASE_URL = "https://hbqlqwbwrfapbkeaxhdz.supabase.co";
+const API_KEY = "sb_publishable_nvpKBQIeZ8WaOTE5RcQACQ_uqFrC6i_";
+
+async function searchData() {
+  const value = document.getElementById("searchValue").value.trim();
+  if (!value) return alert("Enter CNIC or Mobile");
+
+  let query = value.length === 13
+    ? `BENE_CNIC=eq.${value}`
+    : `DY_MOBILE_NO=eq.${value}`;
+
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/Pmrrm?${query}`,
+    {
+      headers: {
+        "apikey": API_KEY,
+        "Authorization": `Bearer ${API_KEY}`
+      }
+    }
+  );
+
+  const data = await response.json();
+
+  const container = document.getElementById("tableContainer");
+  container.innerHTML = "";
+
+  if (data.length === 0) {
+    container.innerHTML = "<p>No record found</p>";
+    return;
+  }
+
+  // Create table
+  let table = document.createElement("table");
+  let thead = document.createElement("thead");
+  let tbody = document.createElement("tbody");
+
+  // Headers (dynamic)
+  let headerRow = document.createElement("tr");
+  Object.keys(data[0]).forEach(key => {
+    let th = document.createElement("th");
+    th.innerText = key;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+
+  // Rows
+  data.forEach(row => {
+    let tr = document.createElement("tr");
+    Object.values(row).forEach(value => {
+      let td = document.createElement("td");
+      td.innerText = value ?? "";
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  container.appendChild(table);
+}
+</script>
+
+</body>
+</html>
