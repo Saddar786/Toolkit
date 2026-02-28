@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Khairpur2 – HBL VVIP Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI,Arial;
+  background:linear-gradient(135deg,#0b6b3a,#042f1b);
+  color:white;
+}
+
+.container{
+  max-width:800px;
+  margin:30px auto;
+  padding:20px;
+}
+
+h2{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.stats{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.cardStat{
+  background:white;
+  color:#0b6b3a;
+  padding:18px;
+  border-radius:12px;
+  text-align:center;
+  font-weight:bold;
+  font-size:18px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.3);
+}
+
+.controls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+input{
+  flex:1;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+}
+
+button{
+  padding:10px 16px;
+  border:none;
+  border-radius:8px;
+  background:white;
+  color:#0b6b3a;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#e4f5ec;
+}
+
+.recordCard{
+  background:white;
+  color:black;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.25);
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+}
+
+.row:last-child{
+  border-bottom:none;
+}
+
+.label{
+  font-weight:bold;
+  color:#0b6b3a;
+}
+
+.badge{
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.success{
+  background:#d4f7e6;
+  color:#0b6b3a;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Khairpur Hbl beneficiary</h2>
+
+<div class="stats">
+  <div class="cardStat">Total Records: <span id="totalRecords">0</span></div>
+  <div class="cardStat">Total Informed: <span id="totalInformed">0</span></div>
+  <div class="cardStat">Total Pending: <span id="totalPending">0</span></div>
+</div>
+
+<div class="controls">
+  <input type="text" id="searchBox" placeholder="Search CNIC / Name / Mobile">
+  <button onclick="loadData()">Search</button>
+  <button onclick="prev()">Previous</button>
+  <button onclick="next()">Next</button>
+</div>
+
+<div id="recordContainer"></div>
+
+</div>
+
+<script>
+const SUPABASE_URL="https://hbqlqwbwrfapbkeaxhdz.supabase.co";
+const API_KEY="sb_publishable_nvpKBQIeZ8WaOTE5RcQACQ_uqFrC6i_";
+
+let records=[];
+let currentIndex=0;
+
+async function loadData(){
+  const search=document.getElementById("searchBox").value.trim();
+
+  let url=`${SUPABASE_URL}/rest/v1/Khairpur2?select=*&ACC_BANK=eq.HBL`;
+
+  if(search){
+    url+=`&or=(CNIC_UNIQUE.ilike.%${search}%,NAME_UNIQUE.ilike.%${search}%,ACC_MOBILE.ilike.%${search}%)`;
+  }
+
+  const res=await fetch(url,{
+    headers:{
+      apikey:API_KEY,
+      Authorization:"Bearer "+API_KEY
+    }
+  });
+
+  records=await res.json();
+  currentIndex=0;
+  updateStats();
+  showRecord();
+}
+
+function updateStats(){
+  const total=records.length;
+  const informed=records.filter(r=>r.informed).length;
+  const pending=total-informed;
+
+  document.getElementById("totalRecords").innerText=total;
+  document.getElementById("totalInformed").innerText=informed;
+  document.getElementById("totalPending").innerText=pending;
+}
+
+function showRecord(){
+  const container=document.getElementById("recordContainer");
+
+  if(records.length===0){
+    container.innerHTML="<div class='recordCard'>No record found</div>";
+    return;
+  }
+
+  const r=records[currentIndex];
+
+  let html=`<div class="recordCard">`;
+
+  html+=`
+  <div style="margin-bottom:15px;font-weight:bold;color:#0b6b3a">
+    Record ${currentIndex+1} of ${records.length}
+  </div>
+  `;
+
+  for(let key in r){
+    html+=`
+      <div class="row">
+        <div class="label">${key}</div>
+        <div>${r[key]===null?"-":r[key]}</div>
+      </div>
+    `;
+  }
+
+  html+=`
+  <div class="row">
+    <div class="label">Status</div>
+    <div>
+      ${
+        r.informed
+        ? `<span class="badge success">✓ Informed</span>`
+        : `<button onclick="markInformed()">Mark Informed</button>`
+      }
+    </div>
+  </div>
+  </div>`;
+
+  container.innerHTML=html;
+}
+
+function next(){
+  if(currentIndex < records.length-1){
+    currentIndex++;
+    showRecord();
+  }
+}
+
+function prev(){
+  if(currentIndex > 0){
+    currentIndex--;
+    showRecord();
+  }
+}
+
+async function markInformed(){
+  const r=records[currentIndex];
+
+  await fetch(`${SUPABASE_URL}/rest/v1/Khairpur2?CNIC_UNIQUE=eq.${r.CNIC_UNIQUE}`,{
+    method:"PATCH",
+    headers:{
+      apikey:API_KEY,
+      Authorization:"Bearer "+API_KEY,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({informed:true})
+  });
+
+  records[currentIndex].informed=true;
+  updateStats();
+  showRecord();
+}
+
+loadData();
+</script>
+
+</body>
+</html>
