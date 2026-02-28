@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Login – Professor Tech Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{
+  font-family:Arial;
+  background:#0b6b3a;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.box{
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  width:320px;
+  text-align:center;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+button{
+  width:100%;
+  padding:12px;
+  background:#0b6b3a;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+button:hover{
+  opacity:0.9;
+}
+.link{
+  margin-top:15px;
+  display:block;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h3>Secure Access</h3>
+
+<input type="password" id="password" placeholder="Enter Password">
+<button onclick="login()">Login</button>
+
+<a class="link" target="_blank"
+href="https://wa.me/923143540673?text=Sir%20password%20send%20karein">
+Get Password on WhatsApp</a>
+
+<p id="msg" style="color:red;"></p>
+</div>
+
+<script>
+
+const CORRECT_PASSWORD = "Professor"; // change this
+
+function login(){
+  const pass = document.getElementById("password").value;
+
+  if(pass === CORRECT_PASSWORD){
+    localStorage.setItem("loggedIn","true");
+    window.location.href = "dashboard.html";
+  }else{
+    document.getElementById("msg").innerText="Wrong Password";
+  }
+}
+
+</script>
+
+</body>
+</html>
