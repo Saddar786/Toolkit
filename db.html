@@ -1,0 +1,472 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROFESSOR DATABASE</title>
+
+<style>
+/* FONT & THEME VARIABLES */
+:root {
+    --bg-color: #050505;
+    --card-bg: #000000;
+    --text-color: #ffffff;
+    --primary-red: #e53935;
+    --outline-color: #e53935;
+    --input-bg: #0a0a0a;
+}
+
+[data-theme="light"] {
+    --bg-color: #f4f4f4;
+    --card-bg: #ffffff;
+    --text-color: #000000;
+    --outline-color: #d32f2f;
+    --input-bg: #ffffff;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif; transition: all 0.3s ease;}
+
+body{
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.app{
+    max-width:520px;
+    margin:auto;
+    padding:15px;
+    position: relative;
+}
+
+/* THEME TOGGLE */
+.theme-switch {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 100;
+}
+
+.theme-btn {
+    background: var(--primary-red);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* HEADER SECTION */
+.header-container {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-top: 20px;
+}
+
+.header-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 15px;
+    object-fit: cover;
+    border: 3px solid var(--primary-red);
+    animation: rotate3D 5s linear infinite;
+    transform-style: preserve-3d;
+    display: block;
+    margin: 0 auto 15px auto;
+}
+
+.brand-title {
+    font-weight: 800;
+    font-size: 26px;
+    color: var(--primary-red);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+@keyframes rotate3D {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(-360deg); }
+}
+
+/* SEARCH SECTION */
+.searchbox{
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 14px;
+    border: 1px solid var(--outline-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+label{
+    font-size: 12px;
+    margin-bottom: 8px;
+    display: block;
+    color: var(--primary-red);
+    font-weight: bold;
+}
+
+input{
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 16px;
+    margin-bottom: 12px;
+    outline: none;
+}
+
+button.search-btn{
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary-red);
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* WHATSAPP FLOATING MENU */
+.wa-float {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1000;
+}
+
+.wa-main-btn {
+    background: var(--primary-red);
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
+}
+
+.wa-icon {
+    width: 32px;
+    height: 32px;
+    fill: white;
+}
+
+.wa-menu {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--primary-red);
+    border-radius: 12px;
+    width: 200px;
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+}
+
+.wa-menu.active {
+    display: flex;
+}
+
+.wa-link {
+    text-decoration: none;
+    color: white;
+    background: #222;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* RESULT CARD */
+.result-page{
+    background: var(--card-bg);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 20px;
+    border: 1px solid var(--outline-color);
+}
+
+.result-header{
+    background: var(--primary-red);
+    color: white;
+    padding: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.result-table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.result-table td{
+    border-bottom: 1px solid #333;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.result-table td:first-child{
+    font-weight: 700;
+    color: var(--primary-red);
+    width: 35%;
+}
+
+/* INTERACTIVE MAP STYLES */
+.map-container {
+    padding: 10px;
+}
+
+.map-frame {
+    width: 100%;
+    height: 250px; /* Increased height for better interaction */
+    border: 1px solid var(--outline-color);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.view-map-btn {
+    display: block;
+    width: 100%;
+    background: #1a73e8;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.status{
+    text-align: center;
+    margin-top: 15px;
+    color: var(--primary-red);
+    font-weight: bold;
+}
+
+.loader {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* FULL LOCK SCREEN STYLE */
+#lockScreen {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh;
+    background: #000;
+    z-index: 10000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #e53935;
+    overflow: hidden;
+}
+
+#lockScreen h1 {
+    font-size: 32px;
+    margin: 25px 0;
+    letter-spacing: 5px;
+    font-weight: 900;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+
+<body data-theme="dark">
+
+<div id="lockScreen">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxf8SBPP-ijSCF_180l94tl-gpEdpwrmpGHSZkTU0Wqg&s=10" class="header-img" style="width:180px; height:180px; border-width: 5px;">
+    <h1>LOCK BY PROFESSOR</h1>
+    <a href="https://api.whatsapp.com/send?phone=+923316342147&text=%3E+*As-Salamu+Alaykum*-Professor bro" style="color:white; font-weight:bold; margin-top:15px; text-decoration:none; background:#e53935; padding:15px 40px; border-radius:10px; box-shadow: 0 8px 20px rgba(229, 57, 53, 0.5); font-size: 18px; letter-spacing: 1px;">CONTACT OWNER</a>
+</div>
+
+<div class="app" id="mainApp">
+    <div class="theme-switch">
+        <button class="theme-btn" onclick="toggleTheme()">🌓 MODE</button>
+    </div>
+
+    <div class="header-container">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxf8SBPP-ijSCF_180l94tl-gpEdpwrmpGHSZkTU0Wqg&s=10" alt="Logo" class="header-img">
+        <div class="brand-title">PROFESSOR DATABASE</div>
+    </div>
+
+    <div class="searchbox">
+        <label>MOBILE NUMBER</label>
+        <input id="phoneInput" type="text" placeholder="03XXXXXXXXX" maxlength="11">
+        <button class="search-btn" onclick="executeSearch()">FIND RECORD</button>
+    </div>
+
+    <div class="loader" id="loader">
+        <div style="width:40px;height:40px;border:4px solid #333;border-top:4px solid var(--primary-red);border-radius:50%;animation:spin .8s linear infinite;margin:auto;"></div>
+        <p style="margin-top:10px;">Accessing Server...</p>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="results"></div>
+</div>
+
+<div class="wa-float" id="waFloat">
+    <div class="wa-menu" id="waMenu">
+        <a href="https://whatsapp.com/channel/0029Vb6icbzLo4hisnuo9G3X" target="_blank" class="wa-link">Official Channel</a>
+        <a href="https://chat.whatsapp.com/IcrZH85R4k80eu7jFW8B1v?mode=gi_t" target="_blank" class="wa-link">Official Group 1</a>
+        <a href="https://wa.link/lw5lor" target="_blank" class="wa-link">PROFESSOR</a>
+        <a href="https://api.whatsapp.com/send?phone=+923143540673&text=%3E+*As-Salamu+Alaykum*%Professor bro" target="_blank" class="wa-link" style="background:var(--primary-red)">OWNER</a>
+    </div>
+    <div class="wa-main-btn" onclick="toggleWAMenu()">
+        <svg class="wa-icon" viewBox="0 0 448 512" />
+    </div>
+</div>
+
+<script>
+/** * UPDATED MENU:
+ * 1. domainCheck() - Silent security lock.
+ * 2. executeSearch() - Data fetch.
+ * 3. renderAll() - UI & MOVEABLE Map builder.
+ * 4. detectNetwork() - Carrier Check.
+ * 5. toggleTheme() - UI switch.
+ */
+
+(function domainCheck() {
+    const allowed = "cHJvZmVzc29yLXRvb2xraXQud29yay5nZA=="; // professor-toolkit.work.gd
+    const current = window.location.hostname;
+    if (current !== atob(allowed)) {
+        document.getElementById("mainApp").style.display = "none";
+        document.getElementById("waFloat").style.display = "none";
+        document.getElementById("lockScreen").style.display = "flex";
+        document.body.style.backgroundColor = "#000";
+    }
+})();
+
+const API = "https://howler-database-api.vercel.app/api/lookup?phone=";
+
+function toggleTheme() {
+    const body = document.body;
+    const current = body.getAttribute("data-theme");
+    body.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+}
+
+function toggleWAMenu() {
+    const menu = document.getElementById("waMenu");
+    menu.classList.toggle("active");
+}
+
+async function executeSearch() {
+    const num = document.getElementById("phoneInput").value.trim();
+    const loader = document.getElementById("loader");
+    const results = document.getElementById("results");
+    const status = document.getElementById("status");
+
+    if (num.length < 10) {
+        status.innerText = "Error: Invalid Number";
+        return;
+    }
+
+    results.innerHTML = "";
+    status.innerText = "";
+    loader.style.display = "block";
+
+    try {
+        const res = await fetch(API + num);
+        const data = await res.json();
+        loader.style.display = "none";
+
+        if (!data.success || !data.result || data.result.length === 0) {
+            status.innerText = "No Records Found";
+            return;
+        }
+
+        renderAll(data.result);
+    } catch (e) {
+        loader.style.display = "none";
+        status.innerText = "API Offline";
+    }
+}
+
+function renderAll(records) {
+    const results = document.getElementById("results");
+    results.innerHTML = "";
+
+    records.forEach((r, index) => {
+        const network = detectNetwork(r.mobile);
+        const address = r.address || "";
+        const encodedAddr = encodeURIComponent(address);
+        
+        // INTERACTIVE EMBED URL (standard google maps embed)
+        const interactiveMapUrl = `https://maps.google.com/maps?q=${encodedAddr}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+        const externalMapUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddr}`;
+
+        results.innerHTML += `
+        <div class="result-page">
+            <div class="result-header">RECORD #${index + 1}</div>
+            <table class="result-table">
+                <tr><td>NAME</td><td>${r.name || "N/A"}</td></tr>
+                <tr><td>CNIC</td><td>${r.cnic || "N/A"}</td></tr>
+                <tr><td>MOBILE</td><td>${r.mobile || "N/A"}</td></tr>
+                <tr><td>ADDRESS</td><td>${address || "N/A"}</td></tr>
+                <tr><td>NETWORK</td><td style="color:var(--primary-red); font-weight:bold;">${network}</td></tr>
+            </table>
+
+            ${address && address !== "N/A" ? `
+            <div class="map-container">
+                <iframe 
+                    class="map-frame" 
+                    src="${interactiveMapUrl}" 
+                    frameborder="0" 
+                    scrolling="no" 
+                    marginheight="0" 
+                    marginwidth="0">
+                </iframe>
+                <a href="${externalMapUrl}" target="_blank" class="view-map-btn">📍 OPEN IN GOOGLE MAPS APP</a>
+            </div>
+            ` : ''}
+
+            <div style="padding:10px; text-align:center;">
+                <button style="background:#444; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;" onclick="resetSearch()">CLEAR</button>
+            </div>
+        </div>
+        `;
+    });
+}
+
+function detectNetwork(num) {
+    if (!num) return "Unknown";
+    if (num.startsWith("030") || num.startsWith("031")) return "Jazz";
+    if (num.startsWith("032")) return "Warid";
+    if (num.startsWith("033")) return "Ufone";
+    if (num.startsWith("034")) return "Telenor";
+    if (num.startsWith("035")) return "SCO";
+    return "Unknown";
+}
+
+function resetSearch() {
+    document.getElementById("phoneInput").value = "";
+    document.getElementById("results").innerHTML = "";
+    document.getElementById("status").innerText = "";
+}
+
+window.onclick = function(event) {
+    if (!event.target.closest('.wa-float')) {
+        document.getElementById("waMenu").classList.remove("active");
+    }
+}
+</script>
+
+</body>
+  </html>
