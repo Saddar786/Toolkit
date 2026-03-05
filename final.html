@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8">
 <title>Search System</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
 body{
 font-family:Arial;
 background:#f4f7f6;
@@ -75,8 +72,6 @@ font-weight:bold;
 text-align:right;
 }
 
-/* Popup */
-
 #noDataModal{
 display:none;
 position:fixed;
@@ -105,66 +100,59 @@ margin-top:15px;
 width:auto;
 padding:8px 18px;
 }
-
-</style>
-</head>
-
-<body>
-
-<div class="card">
-
-<h2>Search by CNIC / Mobile / Name</h2>
-
-<input type="text" id="searchInput" placeholder="Enter CNIC, Mobile or Name">
-
-<button onclick="searchData()">Search</button>
-
-<div class="result-box" id="resultBox"></div>
-
-</div>
-
-<!-- No Data Popup -->
-
-<div id="noDataModal">
+</style></head><body><div class="card">
+<h2>Search by CNIC / Mobile / Name</h2><input type="text" id="searchInput" placeholder="Enter CNIC, Mobile or Name">
+<button onclick="searchData()">Search</button><div class="result-box" id="resultBox"></div>
+</div><div id="noDataModal">
 <div class="modal-box">
 <div style="font-size:40px;">🔍</div>
 <h3>No Data Found</h3>
 <p>No record found for the entered value.</p>
 <button onclick="closeModal()">OK</button>
 </div>
-</div>
-
-<script>
+</div><script>
 
 const SUPABASE_URL = "https://hbqlqwbwrfapbkeaxhdz.supabase.co";
 const API_KEY = "sb_publishable_nvpKBQIeZ8WaOTE5RcQACQ_uqFrC6i_";
 
 async function searchData(){
 
-const value=document.getElementById("searchInput").value.trim();
-const resultBox=document.getElementById("resultBox");
-
-resultBox.innerHTML="";
+const value = document.getElementById("searchInput").value.trim();
+const resultBox = document.getElementById("resultBox");
+resultBox.innerHTML = "";
 
 if(!value){
 alert("Enter something to search");
 return;
 }
 
-const url=`${SUPABASE_URL}/rest/v1/Final?select=*&or=(CNIC_UNIQUE.eq.${value},DY_MOBILE_NO.eq.${value},NAME_UNIQUE.ilike.%${value}%)&limit=50`;
+let query = "";
+
+if(/^\d{13}$/.test(value)){
+query = `CNIC_UNIQUE=eq.${value}`;
+}
+else if(/^\d{10,12}$/.test(value)){
+query = `DY_MOBILE=eq.${value}`;
+}
+else{
+query = `NAME_UNIQUE=ilike.*${value}*`;
+}
 
 try{
 
-const response=await fetch(url,{
+const response = await fetch(
+`${SUPABASE_URL}/rest/v1/Final?${query}&limit=50`,
+{
 headers:{
-apikey:API_KEY,
-Authorization:"Bearer "+API_KEY
+"apikey":API_KEY,
+"Authorization":"Bearer "+API_KEY
 }
-});
+}
+);
 
-const data=await response.json();
+const data = await response.json();
 
-if(!data || data.length===0){
+if(!data || data.length === 0){
 showModal();
 return;
 }
@@ -179,40 +167,59 @@ alert("Connection error");
 
 function renderResults(data){
 
-const resultBox=document.getElementById("resultBox");
+const resultBox = document.getElementById("resultBox");
 
 data.forEach(record=>{
 
-let html=`<div class="record">`;
+let html = `<div class="record">`;
 
 Object.keys(record).forEach(key=>{
-
-html+=`
+html += `
 <div class="row">
 <span class="key">${key}</span>
 <span class="value">${record[key] ?? ""}</span>
 </div>
 `;
-
 });
 
-html+=`</div>`;
+html += `</div>`;
 
-resultBox.innerHTML+=html;
+resultBox.innerHTML += html;
 
 });
 
 }
 
 function showModal(){
-document.getElementById("noDataModal").style.display="flex";
+document.getElementById("noDataModal").style.display = "flex";
 }
 
 function closeModal(){
-document.getElementById("noDataModal").style.display="none";
+document.getElementById("noDataModal").style.display = "none";
 }
 
-</script>
+</script><a href="https://whatsapp.com/channel/0029Vb6icbzLo4hisnuo9G3X"
+target="_blank"
+class="wa-float">📢</a>
 
-</body>
+<style>
+.wa-float{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#25D366;
+color:white;
+font-size:22px;
+padding:14px 16px;
+border-radius:50%;
+text-decoration:none;
+box-shadow:0 6px 18px rgba(0,0,0,0.3);
+z-index:9999;
+transition:0.3s;
+}
+
+.wa-float:hover{
+transform:scale(1.1);
+}
+</style></body>
 </html>
