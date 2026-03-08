@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Universal CNIC / Mobile Search</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family:Arial;
+  background:#f4f7f6;
+  padding:20px;
+}
+
+.card{
+  max-width:800px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+h2{
+  text-align:center;
+  color:#005c2e;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:2px solid #005c2e;
+  margin-bottom:10px;
+  font-size:16px;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  background:#005c2e;
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.result-box{
+  margin-top:20px;
+}
+
+.record{
+  border-bottom:1px solid #ddd;
+  padding:10px 0;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  padding:4px 0;
+}
+
+.key{
+  color:#555;
+}
+
+.value{
+  font-weight:bold;
+  text-align:right;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h2>Universal CNIC / Mobile Search</h2>
+
+<input type="text" id="searchInput" placeholder="Enter CNIC or Mobile">
+<button onclick="searchAll()">Search</button>
+
+<div class="result-box" id="resultBox"></div>
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://hbqlqwbwrfapbkeaxhdz.supabase.co";
+const API_KEY = "sb_publishable_nvpKBQIeZ8WaOTE5RcQACQ_uqFrC6i_"; // yahan apni anon key lagao
+
+async function fetchTable(table, condition){
+  const url = `${SUPABASE_URL}/rest/v1/${table}?select=*&${condition}&limit=50`;
+  const res = await fetch(url,{
+    headers:{
+      "apikey":API_KEY,
+      "Authorization":"Bearer "+API_KEY
+    }
+  });
+  return await res.json();
+}
+
+async function searchAll(){
+
+  const value = document.getElementById("searchInput").value.trim();
+  const resultBox = document.getElementById("resultBox");
+  resultBox.innerHTML = "";
+
+  if(!value){
+    alert("Enter CNIC or Mobile");
+    return;
+  }
+
+  try{
+
+    const results = [];
+
+    // Final
+    results.push(...await fetchTable("Final",
+      `or=(CNIC_UNIQUE.eq.${value},DY_MOBILE_NO.eq.${value},ACC_MOBILE.eq.${value},CITIZEN_NO.eq.${value})`
+    ));
+
+    // Fna
+    results.push(...await fetchTable("Fna",
+      `or=(CNIC_UNIQUE.eq.${value},DY_MOBILE_NO.eq.${value},ACC_MOBILE.eq.${value},CITIZEN_NO.eq.${value})`
+    ));
+
+    // Fna2
+    results.push(...await fetchTable("Fna2",
+      `or=(BENE_CNIC.eq.${value},WALLET_MOBILE.eq.${value},NSER_MOBILE.eq.${value})`
+    ));
+
+    // Pmrrm
+    results.push(...await fetchTable("Pmrrm",
+      `or=(BENE_CNIC.eq.${value},DY_MOBILE_NO.eq.${value})`
+    ));
+
+    // Khairpur2
+    results.push(...await fetchTable("Khairpur2",
+      `or=(CNIC_UNIQUE.eq.${value},DY_MOBILE_NO.eq.${value},ACC_MOBILE.eq.${value},CITIZEN_NO.eq.${value})`
+    ));
+
+    if(results.length === 0){
+      resultBox.innerHTML = "<h3>No Record Found</h3>";
+      return;
+    }
+
+    results.forEach(record=>{
+      let html = `<div class="record">`;
+      Object.keys(record).forEach(key=>{
+        html += `
+          <div class="row">
+            <span class="key">${key}</span>
+            <span class="value">${record[key] ?? ""}</span>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      resultBox.innerHTML += html;
+    });
+
+  }catch(e){
+    alert("Connection error");
+  }
+}
+
+</script>
+
+</body>
+</html>
