@@ -3,10 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Receipt App</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#16a34a">
+<title>Bill Receipt</title>
 
 <style>
 body {
@@ -19,28 +16,36 @@ body {
 .container {
   background: white;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 12px;
   max-width: 350px;
   margin: auto;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-input {
+h2 {
+  margin-bottom: 15px;
+}
+
+input, select {
   width: 100%;
-  padding: 8px;
-  margin: 6px 0;
-  border-radius: 5px;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 16px;
 }
 
 button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
   border: none;
-  border-radius: 5px;
-  background: green;
+  border-radius: 6px;
+  background: #0a8f08;
   color: white;
   font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
 }
 </style>
 </head>
@@ -48,18 +53,28 @@ button {
 <body>
 
 <div class="container">
-  <h3>Bill Receipt</h3>
+  <h2>Bill Receipt</h2>
 
-  <input id="tid" placeholder="Transaction ID">
-  <input id="bank" placeholder="Bank Name">
-  <input id="billid" placeholder="Bill ID">
-  <input id="amount" placeholder="Amount">
+  <!-- Transaction ID -->
+  <input type="number" id="tid" placeholder="Transaction ID">
+
+  <!-- Bank Dropdown -->
+  <select id="bank">
+    <option value="">Select Bank</option>
+    <option value="HBL">HBL</option>
+    <option value="ESAHAULAT">ESAHAULAT</option>
+  </select>
+
+  <!-- Bill ID -->
+  <input type="number" id="billid" placeholder="Bill ID">
+
+  <!-- Amount -->
+  <input type="number" id="amount" placeholder="Amount">
 
   <button onclick="printReceipt()">Print Receipt</button>
 </div>
 
 <script>
-// ===== PRINT FUNCTION =====
 function printReceipt() {
   const tid = document.getElementById("tid").value || "N/A";
   const bank = document.getElementById("bank").value || "N/A";
@@ -68,7 +83,7 @@ function printReceipt() {
 
   let receipt = "";
 
-  receipt += "     MAGSi COMMUNICATION\n";
+  receipt += "     YASEEN ELECTRONICS\n";
   receipt += "------------------------------\n";
 
   receipt += "Transaction ID: " + tid + "\n";
@@ -85,11 +100,6 @@ function printReceipt() {
     "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
 
   window.location.href = url;
-}
-
-// ===== SERVICE WORKER REGISTER =====
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
 }
 </script>
 
