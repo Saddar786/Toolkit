@@ -1,10 +1,10 @@
 {
-  "name": "MAGSi Receipt",
+  "name": "YASEEN ELECTRONICS",
   "short_name": "Receipt",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#16a34a",
+  "theme_color": "#0a8f08",
   "icons": [
     {
       "src": "icon.png",
