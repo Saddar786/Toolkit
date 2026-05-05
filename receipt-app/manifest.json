@@ -1,21 +1,26 @@
 {
-  "name": "YASEEN ELECTRONICS",
-  "short_name": "Receipt",
+  "name": "YASEEN ELECTRONICS Receipt System",
+  "short_name": "YASEEN POS",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#0a8f08",
-  "orientation": "portrait",
+  "description": "Bill receipt printing system for Yaseen Electronics",
+
   "icons": [
     {
       "src": "icon.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
