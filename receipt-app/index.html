@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bill Receipt</title>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a8f08">
+
 <style>
 body {
   font-family: Arial;
@@ -20,10 +23,6 @@ body {
   max-width: 350px;
   margin: auto;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-h2 {
-  margin-bottom: 15px;
 }
 
 input, select {
@@ -45,7 +44,6 @@ button {
   color: white;
   font-weight: bold;
   font-size: 16px;
-  cursor: pointer;
 }
 </style>
 </head>
@@ -55,20 +53,33 @@ button {
 <div class="container">
   <h2>Bill Receipt</h2>
 
-  <!-- Transaction ID -->
   <input type="number" id="tid" placeholder="Transaction ID">
 
-  <!-- Bank Dropdown -->
   <select id="bank">
     <option value="">Select Bank</option>
     <option value="HBL">HBL</option>
     <option value="ESAHAULAT">ESAHAULAT</option>
   </select>
 
-  <!-- Bill ID -->
-  <input type="number" id="billid" placeholder="Bill ID">
+  <select id="company">
+    <option value="">Select Company</option>
+    <option value="SAFCO">SAFCO</option>
+    <option value="KASHF">KASHF</option>
+    <option value="SARSO">SARSO</option>
+    <option value="SEPCO">SEPCO</option>
+    <option value="SSGC">SSGC</option>
+    <option value="PTCL">PTCL</option>
+  </select>
 
-  <!-- Amount -->
+  <!-- 🔥 Paid By Dropdown -->
+  <select id="paidby">
+    <option value="">Paid By</option>
+    <option value="MUHAMMAD AMEEN">MUHAMMAD AMEEN</option>
+    <option value="SADAR UDDIN">SADAR UDDIN</option>
+    <option value="FAIZAN ALI">FAIZAN ALI</option>
+  </select>
+
+  <input type="number" id="billid" placeholder="Bill ID">
   <input type="number" id="amount" placeholder="Amount">
 
   <button onclick="printReceipt()">Print Receipt</button>
@@ -78,28 +89,60 @@ button {
 function printReceipt() {
   const tid = document.getElementById("tid").value || "N/A";
   const bank = document.getElementById("bank").value || "N/A";
+  const company = document.getElementById("company").value || "N/A";
+  const paidby = document.getElementById("paidby").value || "N/A";
   const billid = document.getElementById("billid").value || "N/A";
   const amount = document.getElementById("amount").value || "0";
 
   let receipt = "";
 
-  receipt += "     YASEEN ELECTRONICS\n";
-  receipt += "------------------------------\n";
+  // 🔥 HEADER (BOLD + CENTER)
+  receipt += "\x1B\x61\x01";
+  receipt += "\x1B\x45\x01";
+  receipt += "<--- YASEEN ELECTRONICS --->\n";
+  receipt += "\x1B\x45\x00";
 
-  receipt += "Transaction ID: " + tid + "\n";
-  receipt += "Bank: " + bank + "\n";
-  receipt += "Bill ID: " + billid + "\n";
+  receipt += "\x1B\x61\x00";
 
-  receipt += "------------------------------\n";
-  receipt += "Amount Paid: Rs " + amount + "\n";
-  receipt += "------------------------------\n";
+  receipt += "--------------------------------\n";
 
-  receipt += "Date: " + new Date().toLocaleString() + "\n\n\n";
+  receipt += line("Transaction ID", tid);
+  receipt += line("Bank", bank);
+  receipt += line("Company", company);
+  receipt += line("Paid By", paidby);
+  receipt += line("Bill ID", billid);
+
+  receipt += "--------------------------------\n";
+
+  receipt += "\x1B\x45\x01";
+  receipt += line("Amount Paid", "Rs " + amount);
+  receipt += "\x1B\x45\x00";
+
+  receipt += "--------------------------------\n";
+
+  receipt += line("Date", new Date().toLocaleString());
+
+  receipt += "--------------------------------\n";
+
+  receipt += "\n        Thank You\n\n\n";
 
   const url = "intent:" + encodeURIComponent(receipt) +
     "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
 
   window.location.href = url;
+}
+
+// ALIGNMENT FUNCTION
+function line(label, value) {
+  const totalWidth = 32;
+  const text = label + " : " + value;
+  if (text.length >= totalWidth) return text.slice(0, totalWidth) + "\n";
+  return text + " ".repeat(totalWidth - text.length) + "\n";
+}
+
+// SW
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
 }
 </script>
 
