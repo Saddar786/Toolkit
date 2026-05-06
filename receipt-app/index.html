@@ -3,51 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>YASEEN ELECTRONICS</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a8f08">
 
 <style>
-body {
-  font-family: system-ui;
-  background: #f3f4f6;
-  padding: 20px;
+*{
+  box-sizing:border-box;
 }
 
-.container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 380px;
-  margin: auto;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+body{
+  margin:0;
+  padding:20px;
+  background:#f3f4f6;
+  font-family:system-ui;
 }
 
-h2 { margin-bottom: 10px; }
-
-input, select {
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+.container{
+  max-width:380px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 5px 20px rgba(0,0,0,.1);
 }
 
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  background: #0a8f08;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
+h2{
+  text-align:center;
+  margin-top:0;
+  margin-bottom:15px;
 }
 
-.error {
-  color: red;
-  font-size: 13px;
+input,
+select,
+button{
+  width:100%;
+  padding:12px;
+  margin:7px 0;
+  border-radius:8px;
+  border:1px solid #dcdcdc;
+  font-size:15px;
+}
+
+button{
+  border:none;
+  background:#0a8f08;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+.error{
+  color:red;
+  font-size:13px;
+  margin-top:5px;
+  text-align:center;
 }
 </style>
 </head>
@@ -55,14 +71,19 @@ button {
 <body>
 
 <div class="container">
+
   <h2>Bill Receipt</h2>
 
-  <input type="number" id="tid" placeholder="Transaction ID" required>
+  <input
+    type="number"
+    id="tid"
+    placeholder="Transaction ID"
+  >
 
   <select id="bank">
     <option value="">Select Bank</option>
-    <option>HBL</option>
-    <option>ESAHAULAT</option>
+    <option value="HBL">HBL</option>
+    <option value="ESAHAULAT">ESAHAULAT</option>
   </select>
 
   <select id="company">
@@ -82,76 +103,99 @@ button {
     <option>FAIZAN ALI</option>
   </select>
 
-  <input type="number" id="billid" placeholder="Bill ID" required>
-  <input type="number" id="amount" placeholder="Amount" required>
+  <input
+    type="number"
+    id="billid"
+    placeholder="Bill ID"
+  >
+
+  <input
+    type="number"
+    id="amount"
+    placeholder="Amount"
+  >
 
   <div class="error" id="error"></div>
 
-  <button onclick="handlePrint()">Print Receipt</button>
+  <button onclick="handlePrint()">
+    Print Receipt
+  </button>
+
 </div>
 
 <script>
-// ===== CONFIG =====
+
+// ================= CONFIG =================
+
 const WIDTH = 32;
 
-// ===== MAIN HANDLER =====
-function handlePrint() {
+// ================= MAIN =================
+
+function handlePrint(){
+
   const data = collectData();
 
-  if (!validate(data)) return;
+  if(!validate(data)) return;
 
   const receipt = buildReceipt(data);
+
   sendToPrinter(receipt);
 
   clearForm();
 }
 
-// ===== DATA COLLECTION =====
-function collectData() {
-  return {
-    tid: getVal("tid"),
-    bank: getVal("bank"),
-    company: getVal("company"),
-    paidby: getVal("paidby"),
-    billid: getVal("billid"),
-    amount: getVal("amount"),
-    date: new Date().toLocaleString()
+// ================= DATA =================
+
+function collectData(){
+
+  return{
+    tid:getVal("tid"),
+    bank:getVal("bank"),
+    company:getVal("company"),
+    paidby:getVal("paidby"),
+    billid:getVal("billid"),
+    amount:getVal("amount"),
+    date:new Date().toLocaleString()
   };
 }
 
-// ===== VALIDATION =====
-function validate(d) {
-  if (!d.tid || !d.billid || !d.amount) {
+// ================= VALIDATION =================
+
+function validate(d){
+
+  if(
+    !d.tid ||
+    !d.bank ||
+    !d.company ||
+    !d.billid ||
+    !d.amount
+  ){
     showError("Fill all required fields");
     return false;
   }
+
+  showError("");
+
   return true;
 }
 
-// ===== RECEIPT BUILDER =====
-function buildReceipt(d) {
+// ================= RECEIPT =================
+
+function buildReceipt(d){
+
   let r = "";
-
-  r += esc("center");
-  r += esc("boldOn");
-  r += "<--- YASEEN ELECTRONICS --->\n";
-  r += esc("boldOff");
-
-  r += esc("left");
 
   r += lineSep();
 
   r += line("Transaction ID", d.tid);
   r += line("Bank", d.bank);
   r += line("Company", d.company);
-  r += line("Paid By", d.paidby);
+  r += line("Paid By", d.paidby || "N/A");
   r += line("Bill ID", d.billid);
 
   r += lineSep();
 
-  r += esc("boldOn");
   r += line("Amount Paid", "Rs " + d.amount);
-  r += esc("boldOff");
 
   r += lineSep();
 
@@ -159,55 +203,157 @@ function buildReceipt(d) {
 
   r += lineSep();
 
-  r += "\n        Thank You\n\n\n";
+  r += centerText("VERIFIED RECEIPT");
+  r += centerText("YASEEN ELECTRONICS");
+
+  r += "\n";
+  r += centerText("Thank You");
 
   return r;
 }
 
-// ===== ESC COMMANDS =====
-function esc(type) {
-  const cmds = {
-    center: "\x1B\x61\x01",
-    left: "\x1B\x61\x00",
-    boldOn: "\x1B\x45\x01",
-    boldOff: "\x1B\x45\x00"
-  };
-  return cmds[type] || "";
-}
+// ================= FORMAT =================
 
-// ===== FORMAT LINE =====
-function line(label, value) {
+function line(label,value){
+
   const text = `${label} : ${value}`;
-  if (text.length > WIDTH) {
+
+  if(text.length >= WIDTH){
     return text.substring(0, WIDTH) + "\n";
   }
-  return text + " ".repeat(WIDTH - text.length) + "\n";
+
+  return text +
+    " ".repeat(WIDTH - text.length) +
+    "\n";
 }
 
-// ===== SEPARATOR =====
-function lineSep() {
+function lineSep(){
   return "-".repeat(WIDTH) + "\n";
 }
 
-// ===== PRINT =====
-function sendToPrinter(text) {
-  const url = "intent:" + encodeURIComponent(text) +
+function centerText(text){
+
+  const space =
+    Math.max(
+      0,
+      Math.floor((WIDTH - text.length)/2)
+    );
+
+  return " ".repeat(space) + text + "\n";
+}
+
+// ================= PRINT =================
+
+function sendToPrinter(text){
+
+  const bank =
+    document.getElementById("bank").value;
+
+  let leftLogo = "";
+  let rightLogo = "";
+
+  // ===== AUTO LOGO SWITCH =====
+
+  if(bank === "HBL"){
+
+    leftLogo = "hbl.png";
+    rightLogo = "Konnect.png";
+
+  }else if(bank === "ESAHAULAT"){
+
+    leftLogo = "nadra.png";
+    rightLogo = "esahulat.png";
+  }
+
+  // ===== HTML PRINT =====
+
+  const html = `
+  <html>
+  <body style="
+    width:58mm;
+    font-family:monospace;
+    padding:0;
+    margin:0;
+  ">
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+    ">
+
+      <img src="${leftLogo}"
+      width="70">
+
+      <img src="${rightLogo}"
+      width="70">
+
+    </div>
+
+    <div style="
+      text-align:center;
+      font-weight:bold;
+      font-size:16px;
+      margin-bottom:8px;
+    ">
+      &lt;--- YASEEN ELECTRONICS ---&gt;
+    </div>
+
+    <pre style="
+      font-size:13px;
+      margin:0;
+      white-space:pre-wrap;
+    ">${text}</pre>
+
+  </body>
+  </html>
+  `;
+
+  const url =
+    "intent:" +
+    encodeURIComponent(html) +
     "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
+
   window.location.href = url;
 }
 
-// ===== HELPERS =====
-function getVal(id) {
-  return document.getElementById(id).value.trim();
+// ================= HELPERS =================
+
+function getVal(id){
+  return document
+    .getElementById(id)
+    .value
+    .trim();
 }
 
-function showError(msg) {
-  document.getElementById("error").innerText = msg;
+function showError(msg){
+  document
+    .getElementById("error")
+    .innerText = msg;
 }
 
-function clearForm() {
-  document.querySelectorAll("input").forEach(i => i.value = "");
+function clearForm(){
+
+  document
+    .querySelectorAll("input")
+    .forEach(input=>{
+      input.value = "";
+    });
+
+  document
+    .querySelectorAll("select")
+    .forEach(select=>{
+      select.selectedIndex = 0;
+    });
 }
+
+// ================= SW =================
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+
 </script>
 
 </body>
