@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YASEEN ELECTRONICS</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a8f08">
+
+<style>
+body {
+  font-family: system-ui;
+  background: #f3f4f6;
+  padding: 20px;
+}
+
+.container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 380px;
+  margin: auto;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+h2 { margin-bottom: 10px; }
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: #0a8f08;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.error {
+  color: red;
+  font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Bill Receipt</h2>
+
+  <input type="number" id="tid" placeholder="Transaction ID" required>
+
+  <select id="bank">
+    <option value="">Select Bank</option>
+    <option>HBL</option>
+    <option>ESAHAULAT</option>
+  </select>
+
+  <select id="company">
+    <option value="">Select Company</option>
+    <option>SAFCO</option>
+    <option>KASHF</option>
+    <option>SARSO</option>
+    <option>SEPCO</option>
+    <option>SSGC</option>
+    <option>PTCL</option>
+  </select>
+
+  <select id="paidby">
+    <option value="">Paid By</option>
+    <option>MUHAMMAD AMEEN</option>
+    <option>SADAR UDDIN</option>
+    <option>FAIZAN ALI</option>
+  </select>
+
+  <input type="number" id="billid" placeholder="Bill ID" required>
+  <input type="number" id="amount" placeholder="Amount" required>
+
+  <div class="error" id="error"></div>
+
+  <button onclick="handlePrint()">Print Receipt</button>
+</div>
+
+<script>
+// ===== CONFIG =====
+const WIDTH = 32;
+
+// ===== MAIN HANDLER =====
+function handlePrint() {
+  const data = collectData();
+
+  if (!validate(data)) return;
+
+  const receipt = buildReceipt(data);
+  sendToPrinter(receipt);
+
+  clearForm();
+}
+
+// ===== DATA COLLECTION =====
+function collectData() {
+  return {
+    tid: getVal("tid"),
+    bank: getVal("bank"),
+    company: getVal("company"),
+    paidby: getVal("paidby"),
+    billid: getVal("billid"),
+    amount: getVal("amount"),
+    date: new Date().toLocaleString()
+  };
+}
+
+// ===== VALIDATION =====
+function validate(d) {
+  if (!d.tid || !d.billid || !d.amount) {
+    showError("Fill all required fields");
+    return false;
+  }
+  return true;
+}
+
+// ===== RECEIPT BUILDER =====
+function buildReceipt(d) {
+  let r = "";
+
+  r += esc("center");
+  r += esc("boldOn");
+  r += "<--- YASEEN ELECTRONICS --->\n";
+  r += esc("boldOff");
+
+  r += esc("left");
+
+  r += lineSep();
+
+  r += line("Transaction ID", d.tid);
+  r += line("Bank", d.bank);
+  r += line("Company", d.company);
+  r += line("Paid By", d.paidby);
+  r += line("Bill ID", d.billid);
+
+  r += lineSep();
+
+  r += esc("boldOn");
+  r += line("Amount Paid", "Rs " + d.amount);
+  r += esc("boldOff");
+
+  r += lineSep();
+
+  r += line("Date", d.date);
+
+  r += lineSep();
+
+  r += "\n        Thank You\n\n\n";
+
+  return r;
+}
+
+// ===== ESC COMMANDS =====
+function esc(type) {
+  const cmds = {
+    center: "\x1B\x61\x01",
+    left: "\x1B\x61\x00",
+    boldOn: "\x1B\x45\x01",
+    boldOff: "\x1B\x45\x00"
+  };
+  return cmds[type] || "";
+}
+
+// ===== FORMAT LINE =====
+function line(label, value) {
+  const text = `${label} : ${value}`;
+  if (text.length > WIDTH) {
+    return text.substring(0, WIDTH) + "\n";
+  }
+  return text + " ".repeat(WIDTH - text.length) + "\n";
+}
+
+// ===== SEPARATOR =====
+function lineSep() {
+  return "-".repeat(WIDTH) + "\n";
+}
+
+// ===== PRINT =====
+function sendToPrinter(text) {
+  const url = "intent:" + encodeURIComponent(text) +
+    "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
+  window.location.href = url;
+}
+
+// ===== HELPERS =====
+function getVal(id) {
+  return document.getElementById(id).value.trim();
+}
+
+function showError(msg) {
+  document.getElementById("error").innerText = msg;
+}
+
+function clearForm() {
+  document.querySelectorAll("input").forEach(i => i.value = "");
+}
+</script>
+
+</body>
+</html>
