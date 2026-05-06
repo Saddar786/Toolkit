@@ -10,6 +10,7 @@
 <meta name="theme-color" content="#0a8f08">
 
 <style>
+
 *{
   box-sizing:border-box;
 }
@@ -65,6 +66,7 @@ button:active{
   margin-top:5px;
   text-align:center;
 }
+
 </style>
 </head>
 
@@ -125,21 +127,15 @@ button:active{
 
 <script>
 
-// ================= CONFIG =================
-
-const WIDTH = 32;
-
 // ================= MAIN =================
 
-function handlePrint(){
+async function handlePrint(){
 
   const data = collectData();
 
   if(!validate(data)) return;
 
-  const receipt = buildReceipt(data);
-
-  sendToPrinter(receipt);
+  await printReceipt(data);
 
   clearForm();
 }
@@ -149,13 +145,27 @@ function handlePrint(){
 function collectData(){
 
   return{
-    tid:getVal("tid"),
-    bank:getVal("bank"),
-    company:getVal("company"),
-    paidby:getVal("paidby"),
-    billid:getVal("billid"),
-    amount:getVal("amount"),
-    date:new Date().toLocaleString()
+
+    tid:
+      getVal("tid"),
+
+    bank:
+      getVal("bank"),
+
+    company:
+      getVal("company"),
+
+    paidby:
+      getVal("paidby"),
+
+    billid:
+      getVal("billid"),
+
+    amount:
+      getVal("amount"),
+
+    date:
+      new Date().toLocaleString()
   };
 }
 
@@ -170,7 +180,11 @@ function validate(d){
     !d.billid ||
     !d.amount
   ){
-    showError("Fill all required fields");
+
+    showError(
+      "Fill all required fields"
+    );
+
     return false;
   }
 
@@ -179,149 +193,194 @@ function validate(d){
   return true;
 }
 
-// ================= RECEIPT =================
+// ================= PRINT ENGINE =================
 
-function buildReceipt(d){
+async function printReceipt(d){
 
-  let r = "";
-
-  r += lineSep();
-
-  r += line("Transaction ID", d.tid);
-  r += line("Bank", d.bank);
-  r += line("Company", d.company);
-  r += line("Paid By", d.paidby || "N/A");
-  r += line("Bill ID", d.billid);
-
-  r += lineSep();
-
-  r += line("Amount Paid", "Rs " + d.amount);
-
-  r += lineSep();
-
-  r += line("Date", d.date);
-
-  r += lineSep();
-
-  r += centerText("VERIFIED RECEIPT");
-  r += centerText("YASEEN ELECTRONICS");
-
-  r += "\n";
-  r += centerText("Thank You");
-
-  return r;
-}
-
-// ================= FORMAT =================
-
-function line(label,value){
-
-  const text = `${label} : ${value}`;
-
-  if(text.length >= WIDTH){
-    return text.substring(0, WIDTH) + "\n";
-  }
-
-  return text +
-    " ".repeat(WIDTH - text.length) +
-    "\n";
-}
-
-function lineSep(){
-  return "-".repeat(WIDTH) + "\n";
-}
-
-function centerText(text){
-
-  const space =
-    Math.max(
-      0,
-      Math.floor((WIDTH - text.length)/2)
-    );
-
-  return " ".repeat(space) + text + "\n";
-}
-
-// ================= PRINT =================
-
-function sendToPrinter(text){
-
-  const bank =
-    document.getElementById("bank").value;
+  // ===== AUTO LOGO =====
 
   let leftLogo = "";
   let rightLogo = "";
 
-  // ===== AUTO LOGO SWITCH =====
-
-  if(bank === "HBL"){
+  if(d.bank === "HBL"){
 
     leftLogo = "hbl.png";
     rightLogo = "Konnect.png";
 
-  }else if(bank === "ESAHAULAT"){
+  }else{
 
     leftLogo = "nadra.png";
     rightLogo = "esahulat.png";
   }
 
-  // ===== HTML RECEIPT =====
+  // ===== CANVAS =====
 
-  const html = `
-  <html>
-  <body style="
-    width:58mm;
-    font-family:monospace;
-    padding:0;
-    margin:0;
-  ">
+  const canvas =
+    document.createElement("canvas");
 
-    <div style="
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:8px;
-    ">
+  const ctx =
+    canvas.getContext("2d");
 
-      <img src="${leftLogo}"
-      width="70">
+  canvas.width = 384;
+  canvas.height = 900;
 
-      <img src="${rightLogo}"
-      width="70">
+  // ===== WHITE BG =====
 
-    </div>
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
-    <div style="
-      text-align:center;
-      font-weight:bold;
-      font-size:16px;
-      margin-bottom:8px;
-    ">
-      YASEEN ELECTRONICS
-    </div>
+  // ===== LOAD LOGOS =====
 
-    <pre style="
-      font-size:13px;
-      margin:0;
-      white-space:pre-wrap;
-    ">${text}</pre>
+  const leftImg =
+    await loadImage(leftLogo);
 
-  </body>
-  </html>
-  `;
+  const rightImg =
+    await loadImage(rightLogo);
 
-  // ===== RAWBT HTML MODE =====
+  // ===== DRAW LOGOS =====
+
+  ctx.drawImage(
+    leftImg,
+    20,
+    10,
+    120,
+    60
+  );
+
+  ctx.drawImage(
+    rightImg,
+    244,
+    10,
+    120,
+    60
+  );
+
+  // ===== TITLE =====
+
+  ctx.fillStyle = "#000";
+
+  ctx.font =
+    "bold 28px monospace";
+
+  ctx.textAlign = "center";
+
+  ctx.fillText(
+    "YASEEN ELECTRONICS",
+    192,
+    110
+  );
+
+  // ===== BORDER =====
+
+  ctx.strokeRect(
+    10,
+    130,
+    364,
+    420
+  );
+
+  // ===== RECEIPT TEXT =====
+
+  ctx.textAlign = "left";
+
+  ctx.font =
+    "24px monospace";
+
+  let y = 180;
+
+  const lines = [
+
+    `Transaction ID : ${d.tid}`,
+
+    `Bank          : ${d.bank}`,
+
+    `Company       : ${d.company}`,
+
+    `Paid By       : ${d.paidby}`,
+
+    `Bill ID       : ${d.billid}`,
+
+    "",
+
+    `Amount Paid   : Rs ${d.amount}`,
+
+    "",
+
+    `Date : ${d.date}`
+  ];
+
+  lines.forEach(line=>{
+
+    ctx.fillText(
+      line,
+      25,
+      y
+    );
+
+    y += 40;
+  });
+
+  // ===== FOOTER =====
+
+  ctx.textAlign = "center";
+
+  ctx.font =
+    "bold 24px monospace";
+
+  ctx.fillText(
+    "VERIFIED RECEIPT",
+    192,
+    610
+  );
+
+  ctx.fillText(
+    "Thank You",
+    192,
+    660
+  );
+
+  // ===== IMAGE =====
+
+  const image =
+    canvas.toDataURL("image/png");
+
+  // ===== RAWBT =====
 
   const url =
-    "rawbt:base64," +
-    btoa(unescape(encodeURIComponent(html)));
+    "intent:" +
+    encodeURIComponent(image) +
+    "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
 
   window.location.href = url;
+}
+
+// ================= IMAGE LOADER =================
+
+function loadImage(src){
+
+  return new Promise((resolve,reject)=>{
+
+    const img = new Image();
+
+    img.onload =
+      ()=>resolve(img);
+
+    img.onerror =
+      reject;
+
+    img.src = src;
+  });
 }
 
 // ================= HELPERS =================
 
 function getVal(id){
+
   return document
     .getElementById(id)
     .value
@@ -329,6 +388,7 @@ function getVal(id){
 }
 
 function showError(msg){
+
   document
     .getElementById("error")
     .innerText = msg;
@@ -339,20 +399,25 @@ function clearForm(){
   document
     .querySelectorAll("input")
     .forEach(input=>{
+
       input.value = "";
     });
 
   document
     .querySelectorAll("select")
     .forEach(select=>{
+
       select.selectedIndex = 0;
     });
 }
 
-// ================= SW =================
+// ================= SERVICE WORKER =================
 
 if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
+
+  navigator
+    .serviceWorker
+    .register("sw.js");
 }
 
 </script>
