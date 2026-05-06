@@ -265,7 +265,7 @@ function sendToPrinter(text){
     rightLogo = "esahulat.png";
   }
 
-  // ===== HTML PRINT =====
+  // ===== HTML RECEIPT =====
 
   const html = `
   <html>
@@ -297,7 +297,7 @@ function sendToPrinter(text){
       font-size:16px;
       margin-bottom:8px;
     ">
-      &lt;--- YASEEN ELECTRONICS ---&gt;
+      YASEEN ELECTRONICS
     </div>
 
     <pre style="
@@ -310,10 +310,11 @@ function sendToPrinter(text){
   </html>
   `;
 
+  // ===== RAWBT HTML MODE =====
+
   const url =
-    "intent:" +
-    encodeURIComponent(html) +
-    "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
+    "rawbt:base64," +
+    btoa(unescape(encodeURIComponent(html)));
 
   window.location.href = url;
 }
