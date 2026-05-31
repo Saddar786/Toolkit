@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Agent Lookup</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{
+  font-family: Arial;
+  background:#f4f4f4;
+  text-align:center;
+  padding:30px;
+}
+
+.box{
+  background:white;
+  padding:20px;
+  max-width:500px;
+  margin:auto;
+  border-radius:12px;
+  box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+input{
+  width:90%;
+  padding:12px;
+  margin:10px 0;
+  font-size:16px;
+}
+
+button{
+  padding:10px 18px;
+  font-size:14px;
+  cursor:pointer;
+  border:none;
+  border-radius:6px;
+  margin:5px;
+}
+
+.search-btn{ background:#0d6efd; color:white; }
+.copy-btn{ background:#198754; color:white; }
+.pdf-btn{ background:#dc3545; color:white; }
+
+.result{
+  text-align:left;
+  margin-top:20px;
+  font-size:15px;
+}
+
+iframe{
+  width:100%;
+  height:250px;
+  border-radius:10px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Agent Finder</h2>
+  <input type="text" id="agentID" placeholder="Enter Agent ID">
+  <br>
+  <button class="search-btn" onclick="getAgent()">Search</button>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+
+let citiesList = [];
+let districtsList = [];
+let currentData = {};
+
+window.onload = async function(){
+  try{
+    const cityRes = await fetch("https://www.konnecthbl.com/agentlocator/Agent_Locator.aspx/GetCitiesInformation",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Accept": "application/json, text/javascript, */*; q=0.01"
+      },
+      body:"{}"
+    });
+    const cityData = await cityRes.json();
+    citiesList = JSON.parse(cityData.d);
+
+    const districtRes = await fetch("https://www.konnecthbl.com/agentlocator/Agent_Locator.aspx/GetDistrictInformation",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Accept": "application/json, text/javascript, */*; q=0.01"
+      },
+      body:"{}"
+    });
+    const districtData = await districtRes.json();
+    districtsList = JSON.parse(districtData.d);
+
+  }catch(e){
+    console.log("Preload error");
+  }
+};
+
+async function getAgent(){
+
+  const agentID = document.getElementById("agentID").value.trim();
+  const resultBox = document.getElementById("result");
+
+  if(!agentID){
+    resultBox.innerHTML = "Please enter Agent ID";
+    return;
+  }
+
+  resultBox.innerHTML = "Loading...";
+
+  try{
+
+    const response = await fetch("https://www.konnecthbl.com/agentlocator/Agent_Locator.aspx/GetAgent",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Accept": "application/json, text/javascript, */*; q=0.01"
+      },
+      body:JSON.stringify({
+        City:"Select City",
+        District:"Select District",
+        AgentName:"",
+        AgentID:agentID
+      })
+    });
+
+    const data = await response.json();
+    const agents = JSON.parse(data.d);
+
+    if(!agents.length){
+      resultBox.innerHTML = "No agent found.";
+      return;
+    }
+
+    const a = agents[0];
+
+    const cityName = citiesList.find(c=>c.ID==a.City)?.Name || "Not Found";
+    const districtName = districtsList.find(d=>d.ID==a.District)?.Name || "Not Found";
+
+    const lat = a.Lat;
+    const lng = a.Lng;
+
+    let fullAddress = "Not available";
+
+    try{
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+      const geoData = await geoRes.json();
+      fullAddress = geoData.display_name || "Address not found";
+    }catch(e){}
+
+    currentData = {
+      AgentID: a.AgentID,
+      Business: a.BusinessName,
+      Cell: a.CellNumber,
+      City: cityName,
+      District: districtName,
+      Latitude: lat,
+      Longitude: lng,
+      Address: fullAddress
+    };
+
+    resultBox.innerHTML = `
+      <b>Agent ID:</b> ${a.AgentID}<br>
+      <b>Business:</b> ${a.BusinessName}<br>
+      <b>Cell:</b> ${a.CellNumber}<br>
+      <b>City:</b> ${cityName}<br>
+      <b>District:</b> ${districtName}<br>
+      <b>Latitude:</b> ${lat}<br>
+      <b>Longitude:</b> ${lng}<br>
+      <b>Full Address:</b> ${fullAddress}<br>
+
+      <button class="copy-btn" onclick="copyAll()">Copy All Data</button>
+      <button class="pdf-btn" onclick="downloadPDF()">Download PDF</button>
+
+      <iframe src="https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed"></iframe>
+    `;
+
+  }catch(error){
+    resultBox.innerHTML = "Error fetching data.";
+  }
+}
+
+function copyAll(){
+  const text = Object.entries(currentData)
+    .map(([k,v]) => k + ": " + v)
+    .join("\n");
+
+  navigator.clipboard.writeText(text);
+  alert("Copied!");
+}
+
+function downloadPDF(){
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  let y = 20;
+
+  doc.setFontSize(16);
+  doc.text("Agent Details Report", 20, y);
+
+  doc.setFontSize(12);
+  y += 15;
+
+  for(const key in currentData){
+    doc.text(`${key}: ${currentData[key]}`, 20, y);
+    y += 8;
+  }
+
+  doc.save("Agent_Details.pdf");
+}
+
+</script>
+
+</body>
+</html>
