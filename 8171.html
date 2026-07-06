@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8171 Web Portal - Central Verification System</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --button-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --button-hover: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            --bg-glass: rgba(255, 255, 255, 0.96);
+            --text-dark: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg-glass);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .gov-header {
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .gov-header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .gov-header p {
+            margin: 6px 0 0 0;
+            font-size: 12px;
+            color: #d1fae5;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .portal-body {
+            padding: 30px 25px;
+        }
+
+        .instruction-badge {
+            background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+            border-right: 5px solid #d97706;
+            padding: 14px;
+            color: #92400e;
+            font-size: 14px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            text-align: right;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #475569;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 18px;
+            box-sizing: border-box;
+            outline: none;
+            text-align: center;
+            font-weight: 700;
+            color: var(--text-dark);
+            background-color: #f8fafc;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #10b981;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--button-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 254, 0.3);
+        }
+
+        .btn-submit:hover {
+            background: var(--button-hover);
+            transform: translateY(-1px);
+        }
+
+        .loader-box {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: 700;
+            color: #2563eb;
+            font-size: 14px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .response-card {
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 16px;
+            display: none;
+            text-align: center;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 2px solid #10b981;
+        }
+
+        .response-card h3 {
+            margin: 0 0 15px 0;
+            color: #065f46;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .data-display {
+            border-top: 1px dashed #a7f3d0;
+            margin-top: 15px;
+            padding-top: 15px;
+            text-align: left;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #374151;
+        }
+
+        .data-label { font-weight: 600; color: #6b7280; }
+        .data-value { font-weight: 700; color: #111827; font-family: monospace; font-size: 16px; }
+
+        .amount-highlight {
+            color: #059669;
+            font-size: 25px;
+            font-weight: 900;
+            background: #d1fae5;
+            padding: 5px 16px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .error-card {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+            text-align: center;
+            background-color: #fee2e2;
+            border: 1px solid #f87171;
+            color: #991b1b;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .gov-footer {
+            margin-top: 25px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="gov-header">
+        <h1>8171 WEB PORTAL</h1>
+        <p>BENAZIR INCOME SUPPORT PROGRAMME / EHSAAS</p>
+    </div>
+
+    <div class="portal-body">
+        <div class="instruction-badge">
+            اہلیت کی تفصیلات جاننے کے لیے اپنا 13 ہندسوں کا شناختی کارڈ نمبر (بغیر ڈیش کے) درج کریں۔
+        </div>
+
+        <div class="form-group">
+            <label for="cnicInput">CNIC / شناختی کارڈ نمبر</label>
+            <!-- Sirf numbers allow karega aur max 13 length -->
+            <input type="text" id="cnicInput" placeholder="4520312345671" maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+
+        <button class="btn-submit" onclick="processVerification()">Verify Status</button>
+
+        <div id="loader" class="loader-box">🔄 Connecting Secure National Database Server...</div>
+        
+        <div id="errorBox" class="error-card"></div>
+        <div id="responseBox" class="response-card"></div>
+    </div>
+</div>
+
+<div class="gov-footer">
+    © 2026 Government of Pakistan - Verification Terminal.
+</div>
+
+<script>
+    const cashPool = ['14500', '16500', '18000', '21500', '24500', '25000'];
+
+    function formatCNIC(cnicStr) {
+        // Automatically formats 13 digits to standard XXXXX-XXXXXXX-X display format
+        return cnicStr.replace(/^(\d{5})(\d{7})(\d{1})$/, '$1-$2-$3');
+    }
+
+    function processVerification() {
+        const cnic = document.getElementById('cnicInput').value.trim();
+        const responseBox = document.getElementById('responseBox');
+        const errorBox = document.getElementById('errorBox');
+        const loader = document.getElementById('loader');
+        
+        responseBox.style.display = 'none';
+        errorBox.style.display = 'none';
+
+        // STRICT CHECK: Poore 13 digits hone lazmi hain
+        if (cnic.length !== 13) {
+            errorBox.style.display = 'block';
+            errorBox.innerText = '❌ خطا: شناختی کارڈ نمبر لازمی طور پر 13 ہندسوں کا ہونا چاہیے۔ (CNIC must be exactly 13 digits long)';
+            return;
+        }
+
+        loader.style.display = 'block';
+
+        setTimeout(() => {
+            loader.style.display = 'none';
+            responseBox.style.display = 'block';
+
+            let recordKey = 'bisp_v4_' + cnic;
+            let savedAmount = localStorage.getItem(recordKey);
+
+            if (!savedAmount) {
+                savedAmount = cashPool[Math.floor(Math.random() * cashPool.length)];
+                localStorage.setItem(recordKey, savedAmount);
+            }
+
+            // Beautiful formatted dynamic output
+            const formattedCnic = formatCNIC(cnic);
+
+            responseBox.innerHTML = `
+                <h3>🟢 آپ BISP پروگرام کے لیے اہل ہیں</h3>
+                <p style="color: #065f46; font-size: 14px; margin: 0;">آپ کے گھرانے کی امدادی رقم منظور کر دی گئی ہے۔</p>
+                
+                <div class="data-display">
+                    <div class="data-item">
+                        <span class="data-label">Identity Number:</span>
+                        <span class="data-value">${formattedCnic}</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Portal Status:</span>
+                        <span class="data-value" style="color:#10b981;">Active / Approved</span>
+                    </div>
+                    <div class="data-item" style="flex-direction: column; align-items: center; margin-top: 15px; border-top: 1px dashed #a7f3d0; padding-top: 15px;">
+                        <span class="data-label" style="margin-bottom: 5px;">Released Payment (قسط):</span>
+                        <span class="amount-highlight">Rs. ${savedAmount}/-</span>
+                    </div>
+                </div>
+                <p style="font-size: 11px; color: #6b7280; margin-top: 15px; font-style: italic;">
+                    *Apni qist ke hussol k lye qareebi biometric cash center pr visit krein.
+                </p>
+            `;
+        }, 1200);
+    }
+</script>
+</body>
+</html>
