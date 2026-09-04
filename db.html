@@ -145,7 +145,7 @@ async function searchData(){
     res.innerHTML="Searching...";
 
     try{
-        let r=await fetch(`https://amscript.xyz/PublicApi/Siminfo.php?number=${val}`);
+        let r=await fetch(`https://wasifali.biz.id/public_apis/sim-info-api.php?search=${val}`);
         let data=await r.json();
 
         res.innerHTML="";
