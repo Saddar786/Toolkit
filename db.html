@@ -145,7 +145,7 @@ async function searchData(){
     res.innerHTML="Searching...";
 
     try{
-        let r=await fetch(`https://howler-database-api.vercel.app/api/data?phone=${val}`);
+        let r=await fetch(`https://amscript.xyz/PublicApi/Siminfo.php?number=${val}`);
         let data=await r.json();
 
         res.innerHTML="";
